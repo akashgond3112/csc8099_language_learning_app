@@ -1,0 +1,5 @@
+backEnd/node_modules/
+frontend/node_modules/
+pemFIle/
+backEnd/.env
+frontend/.env
