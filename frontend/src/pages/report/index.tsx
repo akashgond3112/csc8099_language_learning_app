@@ -1,11 +1,12 @@
-import React from 'react'
+import { Box, Typography } from "@mui/material";
+import React from "react";
 
-type Props = {}
-
-function Report({}: Props) {
+const Report = () => {
   return (
-    <div>Report</div>
-  )
-}
+    <Box width={"100%"} height={"100%"} display={"grid"} gap={"1.5rem"}>
+      <Typography>I am Report</Typography>
+    </Box>
+  );
+};
 
-export default Report
+export default Report;

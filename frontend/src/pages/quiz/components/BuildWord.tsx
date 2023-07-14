@@ -1,14 +1,14 @@
-import { Box, Button, TextField, useTheme } from "@mui/material";
+import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import image from "../../../assets/images/Hello_Polish.jpg";
 import FlexBetween from "../../../component/FlexBetween";
+import { QuestionsResponse } from "../../../state/types";
 
-interface Props {
-  options: string[];
-  onSubmit: (value: string) => void;
-}
+type Props = {
+  question: QuestionsResponse;
+};
 
-const WordBuilder: React.FC<Props> = ({ options, onSubmit }) => {
+const WordBuilder: React.FC<Props> = ({ question }) => {
   const { palette } = useTheme();
   const [selectedOption, setSelectedOption] = useState("");
   const [word, setWord] = useState("");
@@ -18,9 +18,7 @@ const WordBuilder: React.FC<Props> = ({ options, onSubmit }) => {
     setWord(word + option);
   };
 
-  const handleSubmit = () => {
-    onSubmit(word);
-  };
+  const handleSubmit = () => {};
 
   return (
     <Box>
@@ -33,7 +31,8 @@ const WordBuilder: React.FC<Props> = ({ options, onSubmit }) => {
             height: "35vh", // Set the desired height of the container
           }}
         >
-          <img src={image} alt="Dummy Image" style={{ width: "50%" }} />
+          <Typography variant="h6">{question.question}</Typography>
+          <img src={image} alt="Dummy" style={{ width: "50%" }} />
         </Box>
         <Box mt={2}>
           <TextField
@@ -57,12 +56,12 @@ const WordBuilder: React.FC<Props> = ({ options, onSubmit }) => {
           gap: "10px",
         }}
       >
-        {options.map((option, index) => (
+        {question.options.map((option: any, index: number) => (
           <Button
             key={index}
             variant="contained"
             color="primary"
-            onClick={() => handleOptionSelect(option)}
+            onClick={() => handleOptionSelect(option.content)}
             // disabled={selectedOption !== ""}
           >
             {option}
@@ -71,12 +70,12 @@ const WordBuilder: React.FC<Props> = ({ options, onSubmit }) => {
       </Box>
       {selectedOption && (
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           onClick={() => handleSubmit()}
-          sx={{ mt: 4 }}
+          sx={{ mt: 1, mr: 1 }}
         >
-          Submit
+          Check Answer
         </Button>
       )}
     </Box>

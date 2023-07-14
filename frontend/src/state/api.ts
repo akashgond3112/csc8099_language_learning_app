@@ -1,25 +1,61 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { GetKpisResponse, GetProductsResponse, GetTransactionsResponse } from "./types";
+import {
+  LeaderBoardResponse,
+  QuestionsResponse,
+  NewFlashCardResponse,
+} from "./types";
+import axios from "axios";
+
+export interface GetFlashCardsParams {
+  noOfWords: number;
+  lng: string;
+  difficultyLevel: string;
+  bloomsLevel: string;
+}
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:8080",
+  }),
   reducerPath: "main",
-  tagTypes: ["Kpis", "Products", "Transactions"],
+  tagTypes: ["Questions", "LeaderBoard", "FlashCards"],
   endpoints: (build) => ({
-    getKpis: build.query<Array<GetKpisResponse>, void>({
-      query: () => "kpi/kpis/",
-      providesTags: ["Kpis"],
+    getQuestions: build.query<Array<QuestionsResponse>, void>({
+      query: () => "/questions",
+      providesTags: ["Questions"],
     }),
-    getProducts: build.query<Array<GetProductsResponse>, void>({
-      query: () => "product/products/",
-      providesTags: ["Products"],
+    getLeaderBoard: build.query<Array<LeaderBoardResponse>, void>({
+      query: () => "/leaderBoards",
+      providesTags: ["LeaderBoard"],
     }),
-    getTransactions: build.query<Array<GetTransactionsResponse>, void>({
-      query: () => "transaction/transactions/",
-      providesTags: ["Transactions"],
+    getFlashCards: build.query<
+      Array<NewFlashCardResponse>,
+      GetFlashCardsParams
+    >({
+      query: ({ noOfWords, lng, difficultyLevel, bloomsLevel }) =>
+        `/languages?noOfWords=${noOfWords}&lng=${lng}&difficultyLevel=${difficultyLevel}&bloomsLevel=${bloomsLevel}`,
+      providesTags: ["FlashCards"],
     }),
   }),
 });
 
-export const { useGetKpisQuery, useGetProductsQuery, useGetTransactionsQuery } =
-  api;
+export const {
+  useGetQuestionsQuery,
+  useGetLeaderBoardQuery,
+  useGetFlashCardsQuery,
+} = api;
+
+export const fetchFlashCards = async (
+  noOfWords: number,
+  lng: string,
+  difficultyLevel: string,
+  bloomsLevel: string
+) => {
+  try {
+    const url: string = `${process.env.REACT_APP_BASE_URL}/languages?noOfWords=${noOfWords}&lng=${lng}&difficultyLevel=${difficultyLevel}&bloomsLevel=${bloomsLevel}`;
+    const data = await axios.get(url);
+    return data;
+  } catch (error) {
+    return error;
+  }
+};

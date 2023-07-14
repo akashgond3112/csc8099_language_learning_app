@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { keyframes } from "@emotion/react";
+import { QuestionsResponse } from "../../../state/types";
 
 // Define keyframes for the balloon animation
 const waveAnimation = keyframes`
@@ -31,46 +32,32 @@ const BalloonOption = styled(Box)(({ theme }) => ({
   animation: `${waveAnimation} 2s infinite`,
 }));
 
-interface QuestionOption {
-  id: string;
-  text: string;
-  isCorrect: boolean;
-}
+type Props = {
+  question: QuestionsResponse;
+};
 
-interface QuestionProps {
-  question: string;
-  options: QuestionOption[];
-  onAnswerSubmit: (selectedOption: QuestionOption | null) => void;
-}
-
-const AnimatedMcqQuestion: React.FC<QuestionProps> = ({
-  question,
-  options,
-  onAnswerSubmit,
-}) => {
-  const [selectedOption, setSelectedOption] = useState<QuestionOption | null>(
-    null
-  );
+function AnimatedMcqQuestion({ question }: Props) {
+  const [selectedOption, setSelectedOption] = useState<any | null>(null);
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
 
-  const handleOptionClick = (option: QuestionOption) => {
-    if (isAnswerSubmitted) return;
-
+  const handleOptionClick = (option: any) => {
     setSelectedOption(option);
+  };
+
+  const handleSubmit = () => {
     setIsAnswerSubmitted(true);
-    onAnswerSubmit(option);
   };
 
   return (
     <Box textAlign="center">
-      <Typography variant="h6">{question}</Typography>
+      <Typography variant="h6">{question.question}</Typography>
       <Box display="flex" justifyContent="center" mt={4}>
-        {options.map((option) => (
+        {question.options.map((option: any, i: number) => (
           <BalloonOption
             key={option.id}
             onClick={() => handleOptionClick(option)}
           >
-            {option.text}
+            {option.content}
           </BalloonOption>
         ))}
       </Box>
@@ -80,16 +67,16 @@ const AnimatedMcqQuestion: React.FC<QuestionProps> = ({
         </Typography>
       )}
       <Button
-        variant="contained"
+        variant="outlined"
         color="primary"
         disabled={isAnswerSubmitted}
-        onClick={() => onAnswerSubmit(null)}
-        sx={{ mt: 4 }}
+        onClick={() => handleSubmit()}
+        sx={{ mt: 1, mr: 1 }}
       >
-        Submit
+        Check Answer
       </Button>
     </Box>
   );
-};
+}
 
 export default AnimatedMcqQuestion;

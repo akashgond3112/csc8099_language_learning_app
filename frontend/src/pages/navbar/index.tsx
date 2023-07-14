@@ -81,6 +81,18 @@ const Navbar = (props: Props) => {
             Report
           </Link>
         </Box>
+        <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
+          <Link
+            to={"/leaderBoard"}
+            onClick={() => setSelected("leaderBoard")}
+            style={{
+              color: selected === "leaderBoard" ? "inherit" : palette.grey[700],
+              textDecoration: "inherit",
+            }}
+          >
+            LeaderBoard
+          </Link>
+        </Box>
       </FlexBetween>
     </FlexBetween>
   );

@@ -7,67 +7,69 @@ import {
   FormControlLabel,
   Radio,
   Button,
+  useTheme,
+  Box,
+  Typography,
 } from "@mui/material";
+import { QuestionsResponse } from "../../../state/types";
 
-interface FillBlankQuestionProps {
-  question: string;
-  image: string;
-  options: string[];
-  onAnswerSubmit: (answer: string) => void;
-}
+type Props = {
+  question: QuestionsResponse;
+};
 
-const FillBlankQuestion: React.FC<FillBlankQuestionProps> = ({
-  question,
-  image,
-  options,
-  onAnswerSubmit,
-}) => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+function Fib({ question }: Props) {
   const [answer, setAnswer] = useState<string>("");
-
-  const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption(event.target.value);
-    setAnswer(event.target.value);
-  };
+  const [isCorrect, setIsCorrect] = useState<boolean>();
+  const { palette } = useTheme();
 
   const handleSubmit = () => {
-    onAnswerSubmit(answer);
-    setAnswer("");
+    console.log(answer);
+    if (answer === question.options[0].content) {
+      setIsCorrect(true);
+    } else {
+      setIsCorrect(false);
+    }
   };
 
   return (
-    <div>
-      <h2>{question}</h2>
-      <img src={image} alt="Question Image" />
+    <Box>
+      <Typography variant="h3" mb="-0.1rem">
+        {question.question}
+      </Typography>
+      {answer.length > 1 ? (
+        <TextField
+          label="Enter your answer"
+          value={answer}
+          onChange={(event) => setAnswer(event.target.value)}
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          sx={{ background: "white" }}
+          color={isCorrect ? "success" : "error"}
+          helperText={isCorrect ? "Correct entry." : "Incorrect entry."}
+        />
+      ) : (
+        <TextField
+          label="Enter your answer"
+          value={answer}
+          onChange={(event) => setAnswer(event.target.value)}
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          sx={{ background: "white" }}
+        />
+      )}
 
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Select the correct answer:</FormLabel>
-        <RadioGroup value={selectedOption} onChange={handleOptionChange}>
-          {options.map((option, index) => (
-            <FormControlLabel
-              key={index}
-              value={option}
-              control={<Radio />}
-              label={option}
-            />
-          ))}
-        </RadioGroup>
-      </FormControl>
-
-      <TextField
-        label="Enter your answer"
-        value={answer}
-        onChange={(event) => setAnswer(event.target.value)}
-        fullWidth
+      <Button
+        sx={{ mt: 1, mr: 1 }}
         variant="outlined"
-        margin="normal"
-      />
-
-      <Button variant="contained" color="primary" onClick={handleSubmit}>
-        Submit
+        color="primary"
+        onClick={handleSubmit}
+      >
+        Check Answer
       </Button>
-    </div>
+    </Box>
   );
-};
+}
 
-export default FillBlankQuestion;
+export default Fib;

@@ -7,19 +7,42 @@ body,
   height: 100%;
   width: 100%;
   font-family: "Inter", sans-serif;
-  background-color: #1f2026;
-  /* background-color: #fff; */
+  /* background-color: #1f2026; */
+  background-color: #fff;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
+.flashCardHeader {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: white;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.3);
+  padding: 0 0.5rem;
+  gap: 1rem;
 }
-::-webkit-scrollbar-track {
-  background: #242427;
+
+.form-group {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
 }
-::-webkit-scrollbar-thumb {
-  background: #48494e;
+
+.form-group > label {
+  color: #777;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
 }
-::-webkit-scrollbar-track:hover {
-  background: #48494e;
+
+.flashcardGenerateButton {
+  background-color: hsl(200, 100%, 50%);
+  color: white;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  border: none;
+  cursor: pointer;
+}
+
+.flashcardGenerateButton:hover {
+  background-color: hsl(200, 100%, 40%);
 }
