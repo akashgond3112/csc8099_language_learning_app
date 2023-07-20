@@ -1,8 +1,8 @@
 package com.language.learning.service.userTest;
 
+import com.language.learning.dto.UserTestDto;
 import com.language.learning.entity.User;
 import com.language.learning.responses.userTest.UserTestResponse;
-import com.language.learning.dto.UserTestDto;
 
 /**
  * @author agond

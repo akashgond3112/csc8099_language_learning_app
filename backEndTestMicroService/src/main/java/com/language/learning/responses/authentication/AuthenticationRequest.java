@@ -1,6 +1,9 @@
 package com.language.learning.responses.authentication;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Team-alpha

@@ -1,6 +1,5 @@
 import express from "express";
-import LeaderBoards from "../models/LeaderBoards.js";
-// LeaderBoards
+import LeaderBoards from "../models/LeaderBoards.js"
 
 const router = express.Router();
 

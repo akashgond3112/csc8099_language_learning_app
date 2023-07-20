@@ -4,3 +4,5 @@ pemFIle/
 backEnd/.env
 frontend/.env
 backEnd/dist/
+backEndTestMicroService/src/main/resources/application-dev.properties
+backEndTestMicroService/src/main/resources/application.properties

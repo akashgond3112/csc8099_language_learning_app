@@ -28,7 +28,7 @@ function CustomButton({ text, onClick }: Props) {
     },
   }));
   return (
-    <ColorButton variant="contained" onClick={clickHandler}>
+    <ColorButton variant="contained" onClick={clickHandler} sx={{color:"black"}}>
       {text}
     </ColorButton>
   );

@@ -2,16 +2,27 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const navSlice = createSlice({
   name: "nav",
-  initialState: { firstLanguage: "English", secondLanguage: null },
+  initialState: {
+    firstLanguage: null,
+    secondLanguage: null,
+    secondLanguageImageUrl: null,
+  },
   reducers: {
     setFirstLanguage(state, action) {
-      state.firstLanguage = action.payload.firstLangauge;
+      state.firstLanguage = action.payload;
     },
     setSecondLanguage(state, action) {
-      state.firstLanguage = action.payload.firstLangauge;
+      state.secondLanguage = action.payload;
+    },
+    setSecondLanguageImageUrl(state, action) {
+      state.secondLanguageImageUrl = action.payload;
     },
   },
 });
 
-export const navActions = navSlice.actions;
+export const {
+  setFirstLanguage,
+  setSecondLanguage,
+  setSecondLanguageImageUrl,
+} = navSlice.actions;
 export default navSlice;

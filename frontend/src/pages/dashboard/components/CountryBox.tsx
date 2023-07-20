@@ -4,6 +4,13 @@ import CountryCard from "./CountryCard";
 import { Country } from "../../../state/types";
 import CustomizedSnackbars from "../../../component/CustomizedSnackbars";
 
+import {
+  setNativeLanguage,
+  setTargetLanguage,
+  setTargetLanguageImageUrl,
+} from "../../../store/actions/nav-actions";
+import { useAppDispatch } from "../../../hooks/utils";
+
 type Props = {
   isNative: boolean;
   countries: Country[];
@@ -36,6 +43,8 @@ function Item(props: BoxProps) {
 let tmp: String = "";
 
 function CountryBox({ isNative, countries }: Props) {
+  const dispatch = useAppDispatch();
+
   const [selectedNativeLanguage, setselectedNativeLanguage] = useState(false);
   const [selectedNativeCountryName, setSelectednativeCountryName] =
     useState("");
@@ -55,16 +64,22 @@ function CountryBox({ isNative, countries }: Props) {
       setselectedNativeLanguage(true);
       setSelectednativeCountryName(_Country.name);
       setSelectedNativeCountryImageUrl(_Country.url);
+
+      
+      dispatch(setNativeLanguage(_Country.name));
       tmp = _Country.name;
-    } else  if (
+    } else if (
       !_isNativeIndex &&
       _Country !== undefined &&
       tmp !== _Country.name
     ) {
-      console.log(selectedNativeCountryName);
       setSelectedLanguageToLearn(true);
       setSelectedLanguageToLearnName(_Country.name);
       setSelectedLanguageToLearnImageUrl(_Country.url);
+      dispatch(setTargetLanguage(_Country.name));
+
+
+      dispatch(setTargetLanguageImageUrl(_Country.url));
     } else {
       setError(true);
       setErrorMessage("Both native and lanuage to learn cannot be same");

@@ -10,7 +10,6 @@ class PeerService {
         iceServers: [
           {
             urls: [
-              "stun:stun.l.google.com:19302",
               "stun:global.stun.twilio.com:3478",
             ],
           },
@@ -31,6 +30,8 @@ class PeerService {
       const ans = await this.peer.createAnswer();
       await this.peer.setLocalDescription(new RTCSessionDescription(ans));
       return ans;
+    } else {
+      console.log("No Peer Found");
     }
   }
 
@@ -41,6 +42,8 @@ class PeerService {
   async setLocalDescription(answer: RTCSessionDescriptionInit) {
     if (this.peer) {
       await this.peer.setRemoteDescription(new RTCSessionDescription(answer));
+    }else {
+      console.log("No Peer Found");
     }
   }
 

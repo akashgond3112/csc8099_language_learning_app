@@ -17,13 +17,8 @@ import Quiz from "./components/Quiz";
 const StartQuiz = () => {
   const { palette } = useTheme();
 
-  const inputRef = useRef(null);
-
   const [showTest, setShowTest] = useState(false);
 
-  function onSubmit() {
-    console.log("Submitted userName");
-  }
   return (
     <Box
       width={"100%"}
@@ -31,7 +26,11 @@ const StartQuiz = () => {
       display={"flex"}
       gap={"1.5rem"}
       color={palette.grey[300]}
-      sx={{ alignItems: "center", flexDirection: "column" }}
+      sx={{
+        alignItems: "center",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
     >
       <Box>
         <Typography variant="h1" gutterBottom>
@@ -39,7 +38,14 @@ const StartQuiz = () => {
         </Typography>
       </Box>
       {!showTest && (
-        <Box>
+        <Box
+          sx={{
+            display:"flex",
+            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
           <Box>
             <List>
               <Typography variant="h3" gutterBottom>
@@ -56,32 +62,10 @@ const StartQuiz = () => {
               </Typography>
             </List>
           </Box>
-          {/* <form id="form">
-          <input ref={inputRef} type="text" placeholder="username*" />
-        </form> */}
-          <Box
-            component="form"
-            sx={{
-              "& > :not(style)": { m: 1, width: "25ch" },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              id="outlined-basic"
-              label="Username"
-              variant="outlined"
-              sx={{
-                backgroundColor: palette.grey[300],
-                color: palette.grey[300],
-              }}
-              ref={inputRef}
-            />
-          </Box>
           <Box>
             <Link to={""}>
               <CustomButton
-                text="start"
+                text="Start Quiz"
                 onClick={() => setShowTest(!showTest)}
               />
             </Link>

@@ -1,29 +1,55 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, Button, Chip, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PixIcon from "@mui/icons-material/Pix";
 import FlexBetween from "../../component/FlexBetween";
+import { useAppSelector } from "../../hooks/utils";
+import ProfileAvatar from "./components/avatar";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 type Props = {};
 
 const Navbar = (props: Props) => {
   const { palette } = useTheme();
   const [selected, setSelected] = useState("dashboard");
+  const navigate = useNavigate();
+
+  const state = useAppSelector((state) => state.nav);
+
+  const isUserLoggedIn: boolean = true;
 
   return (
     <FlexBetween mb="0.25rem" p="0.5rem 0rem" color={palette.grey[300]}>
       {/* {LEFT SIDE } */}
       <FlexBetween gap="0.75rem">
         <PixIcon sx={{ fontSize: "28px" }} />
-        <Typography variant="h4" fontSize="16px">
-          Linguist Prodigy
-        </Typography>
+        <Link to={"/"}>
+          <Typography variant="h4" fontSize="16px">
+            Linguist Prodigy
+          </Typography>
+        </Link>
       </FlexBetween>
       {/* {RIGHT SIDE} */}
       <FlexBetween gap="2rem">
+        {state.secondLanguage != null &&
+          state.secondLanguageImageUrl !== null && (
+            <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
+              <Chip
+                avatar={
+                  <Avatar
+                    alt={state.secondLanguage}
+                    src={state.secondLanguageImageUrl}
+                  />
+                }
+                label={state.secondLanguage}
+                variant="filled"
+                sx={{ color: "white" }}
+              />
+            </Box>
+          )}
         <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
           <Link
-            to={"/"}
+            to={"/dashBoard"}
             onClick={() => setSelected("dashboard")}
             style={{
               color: selected === "dashboard" ? "inherit" : palette.grey[700],
@@ -54,7 +80,7 @@ const Navbar = (props: Props) => {
               textDecoration: "inherit",
             }}
           >
-            FlashCards
+            Flashcards
           </Link>
         </Box>
         <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
@@ -90,9 +116,21 @@ const Navbar = (props: Props) => {
               textDecoration: "inherit",
             }}
           >
-            LeaderBoard
+            Leader Board
           </Link>
         </Box>
+        {isUserLoggedIn && (
+          <>
+            <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
+              <ProfileAvatar />
+            </Box>
+            <Box>
+              <Button>
+                <LogoutIcon /> {`Logout` }
+              </Button>
+            </Box>
+          </>
+        )}
       </FlexBetween>
     </FlexBetween>
   );

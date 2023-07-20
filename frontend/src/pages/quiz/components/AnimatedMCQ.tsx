@@ -50,7 +50,7 @@ function AnimatedMcqQuestion({ question }: Props) {
 
   return (
     <Box textAlign="center">
-      <Typography variant="h6">{question.question}</Typography>
+      <Typography variant="h2">{question.question}</Typography>
       <Box display="flex" justifyContent="center" mt={4}>
         {question.options.map((option: any, i: number) => (
           <BalloonOption

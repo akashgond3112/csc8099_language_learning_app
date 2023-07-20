@@ -55,47 +55,99 @@ export default function Dashboard() {
 
 const countries: Country[] = [
   {
-    name: "India",
-    url: "https://flagcdn.com/128x96/in.png",
+    name: "arabic",
+    url: "https://flagcdn.com/128x96/sa.png",
   },
   {
-    name: "Spain",
-    url: "https://flagcdn.com/128x96/es.png",
+    name: "bangla",
+    url: "https://flagcdn.com/128x96/bd.png",
   },
   {
-    name: "United Kingdom",
-    url: "https://flagcdn.com/128x96/gb.png",
+    name: "brazilian",
+    url: "https://flagcdn.com/128x96/br.png",
   },
   {
-    name: "Turkey",
-    url: "https://flagcdn.com/128x96/tr.png",
+    name: "chineseTraditional",
+    url: "https://flagcdn.com/128x96/cn.png",
   },
   {
-    name: "France",
+    name: "chineseSimplified",
+    url: "https://flagcdn.com/128x96/cn.png",
+  },
+  {
+    name: "croatian",
+    url: "https://flagcdn.com/128x96/hr.png",
+  },
+  {
+    name: "dutch",
+    url: "https://flagcdn.com/128x96/nl.png",
+  },
+  {
+    name: "filipino",
+    url: "https://flagcdn.com/128x96/ph.png",
+  },
+  {
+    name: "french",
     url: "https://flagcdn.com/128x96/fr.png",
   },
   {
-    name: "Finland",
-    url: "https://flagcdn.com/128x96/fi.png",
-  },
-  {
-    name: "Germany",
+    name: "german",
     url: "https://flagcdn.com/128x96/de.png",
   },
   {
-    name: "Greece",
+    name: "greek",
     url: "https://flagcdn.com/128x96/gr.png",
   },
   {
-    name: "Italy",
+    name: "hindi",
+    url: "https://flagcdn.com/128x96/in.png",
+  },
+  {
+    name: "indonesian",
+    url: "https://flagcdn.com/128x96/id.png",
+  },
+  {
+    name: "italian",
     url: "https://flagcdn.com/128x96/it.png",
   },
   {
-    name: "South Korea",
+    name: "japanese",
+    url: "https://flagcdn.com/128x96/jp.png",
+  },
+  {
+    name: "korean",
     url: "https://flagcdn.com/128x96/kr.png",
   },
   {
-    name: "China",
-    url: "https://flagcdn.com/128x96/cn.png",
+    name: "polish",
+    url: "https://flagcdn.com/128x96/pt.png",
+  },
+  {
+    name: "russian",
+    url: "https://flagcdn.com/128x96/ru.png",
+  },
+  {
+    name: "serbian",
+    url: "https://flagcdn.com/128x96/rs.png",
+  },
+  {
+    name: "spanish",
+    url: "https://flagcdn.com/128x96/es.png",
+  },
+  {
+    name: "english",
+    url: "https://flagcdn.com/128x96/gb.png",
+  },
+  {
+    name: "swedish",
+    url: "https://flagcdn.com/128x96/se.png",
+  },
+  {
+    name: "thai",
+    url: "https://flagcdn.com/128x96/th.png",
+  },
+  {
+    name: "turkish",
+    url: "https://flagcdn.com/128x96/tr.png",
   },
 ];

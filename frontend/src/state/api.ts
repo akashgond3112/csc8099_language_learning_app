@@ -15,7 +15,7 @@ export interface GetFlashCardsParams {
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080",
+    baseUrl: "http://localhost:8081",
   }),
   reducerPath: "main",
   tagTypes: ["Questions", "LeaderBoard", "FlashCards"],
@@ -59,3 +59,32 @@ export const fetchFlashCards = async (
     return error;
   }
 };
+
+
+export const login = async () => {
+  try {
+
+  } catch (err) {
+    console.log(err);
+
+  }
+}
+
+export const logout = async () => {
+  try {
+
+  } catch (err) {
+    console.log(err);
+
+  }
+}
+
+
+export const getUserInfo = async () => {
+  try {
+
+  } catch (err) {
+    console.log(err);
+
+  }
+}

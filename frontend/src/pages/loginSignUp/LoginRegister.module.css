@@ -1,0 +1,40 @@
+.main {
+  /* text-align: "center"; */
+  text-align: center;
+  display: flex;
+  min-height: 90vh;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(
+    79deg,
+    #0ebfa0,
+    #41f2d3 8%,
+    rgb(255, 255, 255)
+  );
+}
+.authFormContainer {
+  display: flex;
+  flex-direction: column;
+}
+.input {
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+}
+.label {
+  text-align: left;
+  padding: 0.15rem 0;
+  font-size: smaller;
+}
+.linkBtn {
+  border: none;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  background: none;
+  text-decoration: underline;
+  margin-top: 1rem;
+}

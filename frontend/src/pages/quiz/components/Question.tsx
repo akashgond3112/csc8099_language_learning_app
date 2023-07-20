@@ -16,8 +16,8 @@ function Question({ ques }: Props) {
       {ques.type === "mcq" && <Mcq question={ques} />}
       {ques.type === "fib" && <Fib question={ques} />}
       {ques.type === "mtf" && <MatchQuestion question={ques} />}
-      {ques.type === "mtf" && <AnimatedMcqQuestion question={ques} />}
-      {ques.type === "mtf" && <WordBuilder question={ques} />}
+      {ques.type === "amcq" && <AnimatedMcqQuestion question={ques} />}
+      {ques.type === "wb" && <WordBuilder question={ques} />}
     </Box>
   );
 }

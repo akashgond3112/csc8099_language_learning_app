@@ -5,11 +5,20 @@ import { Socket } from "socket.io-client";
 import ReactPlayer from "react-player";
 import PeerService from "../components/../../../services/PeerService";
 import { off } from "process";
+import {
+  Box,
+  Button,
+  LinearProgress,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
 type Props = {};
 
 const Room = (props: Props) => {
   const params = useParams();
+  const { palette } = useTheme();
+
   const socket: Socket = useAppSelector((state) => state.socket.socket);
   const [remoteSocketId, setremoteSocketId] = useState<any | null>(null);
   const [myStream, setmyStream] = useState<MediaStream | null>(null);
@@ -18,7 +27,6 @@ const Room = (props: Props) => {
   const handleUserJoined = useCallback(
     (data: { emailId: any; roomNumber: any }) => {
       const { emailId, roomNumber } = data;
-      //   console.log(`${emailId} &&& ${roomNumber}`);
       setremoteSocketId(roomNumber);
     },
     []
@@ -39,14 +47,15 @@ const Room = (props: Props) => {
   const handleIncomingCall = useCallback(
     async (data: { from: any; offer: any }) => {
       const { from, offer } = data;
-
       setremoteSocketId(from);
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: true,
       });
       setmyStream(stream);
+
       console.log(`Incoming Call ::: ${from} &&& ${offer}`);
+
       const answerCall = await PeerService.getAnswer(offer);
       socket.emit("call:accepted", { to: from, answerCall });
     },
@@ -64,7 +73,6 @@ const Room = (props: Props) => {
     async (data: { from: any; answerCall: any }) => {
       const { from, answerCall } = data;
       await PeerService.setLocalDescription(answerCall);
-      console.log(`Accepted Call ::: ${from} &&& ${answerCall}`);
       sendStreams();
     },
     [sendStreams]
@@ -133,38 +141,142 @@ const Room = (props: Props) => {
   ]);
 
   return (
-    <div>
-      <h1> {`ROOM ID ${params.roomNumber}`}</h1>
-      {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      <h4>
-        {remoteSocketId
-          ? `User with remote ID joined: ${{ remoteSocketId }}`
-          : `No One in Room`}
-      </h4>
-      {remoteSocketId && <button onClick={handleCallUser}>Call</button>}
-      {myStream && (
-        <>
-          <h1>My Stream</h1>
-          <ReactPlayer
-            playing
-            muted
-            style={{ height: "100px", width: "200px" }}
-            url={myStream}
-          ></ReactPlayer>
-        </>
-      )}
-      {remoteStream && (
-        <>
-          <h1>Remote Stream</h1>
-          <ReactPlayer
-            playing
-            muted
-            style={{ height: "100px", width: "200px" }}
-            url={remoteStream}
-          ></ReactPlayer>
-        </>
-      )}
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          marginTop: "16px",
+        }}
+      >
+        {myStream && (
+          <>
+            <Box>
+              <h1
+                style={{
+                  backgroundColor: palette.primary[200],
+                  borderRadius: "0.5em",
+                  width: "10em",
+                  textAlign: "center",
+                  margin: "none",
+                }}
+              >
+                My Stream
+              </h1>
+            </Box>
+            <ReactPlayer
+              playing
+              muted
+              style={{ height: "100px", width: "200px" }}
+              url={myStream}
+            />
+          </>
+        )}
+        {remoteStream && (
+          <>
+            <Box
+              style={{
+                backgroundColor: palette.primary[200],
+                borderRadius: "0.5em",
+                width: "8em",
+                textAlign: "center",
+              }}
+            >
+              <h1>Remote Stream</h1>
+            </Box>
+            <ReactPlayer
+              playing
+              muted
+              style={{ height: "100px", width: "200px" }}
+              url={remoteStream}
+            />
+          </>
+        )}
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Box>
+          <h1
+            style={{
+              backgroundColor: palette.primary[200],
+              borderRadius: "0.5em",
+              width: "8em",
+              textAlign: "center",
+            }}
+          >
+            {remoteSocketId ? `User Joined` : "No One in Room"}
+          </h1>
+        </Box>
+        <Box>
+          <h1
+            style={{
+              backgroundColor: palette.primary[200],
+              borderRadius: "0.5em",
+              width: "9em",
+              textAlign: "center",
+            }}
+          >{`Room Number : ${params.roomNumber}`}</h1>
+        </Box>
+        <Box sx={{ width: "100%" }}>
+          <LinearProgress
+            sx={{ backgroundColor: palette.secondary[200], height: "0.5em" }}
+          />
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 10,
+          marginTop: "16px",
+        }}
+      >
+        {myStream && (
+          <Button
+            sx={{
+              borderRadius: "1em",
+              padding: "1em 5em",
+              // margin: "1em",
+            }}
+            type="submit"
+            variant="outlined"
+            onClick={sendStreams}
+          >
+            Send Stream
+          </Button>
+        )}
+        {remoteSocketId && (
+          <Button
+            sx={{
+              borderRadius: "1em",
+              padding: "1em 5em",
+            }}
+            type="submit"
+            variant="outlined"
+            onClick={handleCallUser}
+          >
+            Call
+          </Button>
+        )}
+      </Box>
+    </Box>
   );
 };
 

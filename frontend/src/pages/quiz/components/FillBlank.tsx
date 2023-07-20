@@ -32,42 +32,54 @@ function Fib({ question }: Props) {
   };
 
   return (
-    <Box>
-      <Typography variant="h3" mb="-0.1rem">
-        {question.question}
-      </Typography>
-      {answer.length > 1 ? (
-        <TextField
-          label="Enter your answer"
-          value={answer}
-          onChange={(event) => setAnswer(event.target.value)}
-          fullWidth
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Box>
+        <Typography variant="h2">
+          {question.question}
+        </Typography>
+      </Box>
+      <Box>
+        {answer.length > 1 ? (
+          <TextField
+            label="Enter your answer"
+            value={answer}
+            onChange={(event) => setAnswer(event.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            sx={{ background: "white" }}
+            color={isCorrect ? "success" : "error"}
+            helperText={isCorrect ? "Correct entry." : "Incorrect entry."}
+          />
+        ) : (
+          <TextField
+            label="Enter your answer"
+            value={answer}
+            onChange={(event) => setAnswer(event.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            sx={{ background: "white" }}
+          />
+        )}
+      </Box>
+      <Box>
+        <Button
+          sx={{ mt: 1, mr: 1 }}
           variant="outlined"
-          margin="normal"
-          sx={{ background: "white" }}
-          color={isCorrect ? "success" : "error"}
-          helperText={isCorrect ? "Correct entry." : "Incorrect entry."}
-        />
-      ) : (
-        <TextField
-          label="Enter your answer"
-          value={answer}
-          onChange={(event) => setAnswer(event.target.value)}
-          fullWidth
-          variant="outlined"
-          margin="normal"
-          sx={{ background: "white" }}
-        />
-      )}
-
-      <Button
-        sx={{ mt: 1, mr: 1 }}
-        variant="outlined"
-        color="primary"
-        onClick={handleSubmit}
-      >
-        Check Answer
-      </Button>
+          color="primary"
+          onClick={handleSubmit}
+        >
+          Check Answer
+        </Button>
+      </Box>
     </Box>
   );
 }

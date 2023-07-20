@@ -8,11 +8,10 @@ import bodyParser from "body-parser";
 import http from "http";
 import { Server } from "socket.io";
 import path from "path";
-import sequelize from "./src/utils/database.js";
+// import sequelize from "@/utils/database.js";
 import languagesRoutes from "./src/routes/languages.js";
 import leaderBoardRoutes from "./src/routes/leaderBoards.js";
-import LeaderBoards from "./src/models/LeaderBoards.js";
-import Languages from "./src/models/Language.js";
+import questionsRoutes from "./src/routes/questions.js";
 
 /* Constants */
 const app = express();
@@ -34,6 +33,7 @@ app.use(cors());
 /* ROUTES */
 app.use("/languages", languagesRoutes);
 app.use("/leaderBoards", leaderBoardRoutes);
+app.use("/questions", questionsRoutes);
 
 /* HTTP SOCKET ROUTES */
 const io = new Server(server, {
@@ -47,10 +47,7 @@ const io = new Server(server, {
 const emailToSocketIdMap = new Map();
 const socketIdToEmailMap = new Map();
 io.on("connection", (socket) => {
-  console.log("New client connected", socket.id);
   socket.on(`room:join`, (data) => {
-    console.log(data);
-
     const { emailId, roomNumber } = data;
     emailToSocketIdMap.set(emailId, socket.id);
     socketIdToEmailMap.set(socket.id, emailId);
@@ -99,6 +96,6 @@ var options = {
 mongoose
   .connect(URL, options)
   .then(async () => {
-    server.listen(8080, () => console.log(`Server Port: ${PORT}`));
+    server.listen(PORT, () => console.log(`Server Port: ${PORT}`));
   })
   .catch((err) => console.log(`${err} didn't connect`));

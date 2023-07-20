@@ -14,16 +14,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Value("${external.react.frontend.app.url}")
-    private String corsUrl;
-
-    @Override
-    public void addCorsMappings(CorsRegistry corsRegistry){
-        corsRegistry.addMapping("/**")
-                .allowedMethods("*")
-                .allowedOrigins(corsUrl)
-                .allowedHeaders("*")
-                .allowCredentials(false)
-                .maxAge(-1);
-    }
+//    @Value("${external.react.frontend.app.url}")
+//    private String corsUrl;
+//
+//    @Override
+//    public void addCorsMappings(CorsRegistry corsRegistry){
+//        corsRegistry.addMapping("/**")
+//                .allowedMethods("*")
+//                .allowedOrigins(corsUrl)
+//                .allowedHeaders("*")
+//                .allowCredentials(false)
+//                .maxAge(-1);
+//    }
 }

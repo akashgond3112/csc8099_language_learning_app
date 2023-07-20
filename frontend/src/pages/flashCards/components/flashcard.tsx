@@ -18,7 +18,7 @@ const Flashcard = ({ flashCard }: Props) => {
       frontEl.current?.getBoundingClientRect().height;
 
     const backHeight: number | undefined =
-      frontEl.current?.getBoundingClientRect().height;
+      backEl.current?.getBoundingClientRect().height;
 
     setHeight(
       Math.max(
@@ -36,23 +36,39 @@ const Flashcard = ({ flashCard }: Props) => {
     return () => window.removeEventListener("resize", setmaxHeight);
   }, []);
 
+  const cardFaceFrontClasses = [classes.card__face, classes.card__face__front];
+  const cardFaceBackClasses = [classes.card__face, classes.card__face__back];
+
+  let cardInnerClasses = [classes.card__inner];
+
+  if (flip) {
+    cardInnerClasses = [classes.card__inner, classes.is__flipped];
+  }
+
   return (
     <>
-      <div className={classes.main}>
-        <div
-          className={`${classes.card} ${flip ? classes.flip : ``}`}
-          style={{ height: height }}
-        >
-          {/* Front side */}
-          <div className={classes.front} ref={frontEl}>
-            {flashCard.word}
+      <div className={classes.card}>
+        <div className={cardInnerClasses.join(" ")}>
+          <div className={cardFaceFrontClasses.join(" ")}>
+            <h2>{flashCard.word}</h2>
           </div>
-
-          {/* Back Side */}
-          <div className={classes.back} ref={backEl}>
-            {flashCard.translation}
+          <div className={cardFaceBackClasses.join(" ")}>
+            <div className={classes.card__content}>
+              <div className={classes.card__header}>
+                <img
+                  width="96"
+                  height="96"
+                  src="https://img.icons8.com/color/96/great-britain-circular.png"
+                  alt="great-britain-circular"
+                  className="pp"
+                />
+                <h4>Total Points {flashCard.total_points}</h4>
+              </div>
+              <div className={classes.card__body}>
+                <h2>{flashCard.translation}</h2>
+              </div>
+            </div>
           </div>
-          {/* {flip ? flashCard.answer : flashCard.question} */}
         </div>
         <div className={classes.buttonContainer}>
           <div className={classes.flashCardButtons}>

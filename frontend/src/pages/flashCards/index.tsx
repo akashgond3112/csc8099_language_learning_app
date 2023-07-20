@@ -3,6 +3,7 @@ import FlashcardList from "./components/flashcardList";
 import { fetchFlashCards, useGetFlashCardsQuery } from "../../state/api";
 import { NewFlashCardResponse } from "../../state/types";
 import axios from "axios";
+import { useAppSelector } from "../../hooks/utils";
 
 const bloomsLevels: Array<string> = [
   "Knowledge",
@@ -22,16 +23,22 @@ const FlashCards = () => {
     NewFlashCardResponse[] | []
   >([]);
 
+  const state = useAppSelector((state) => state.nav);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
     if (
       difficultyLevelEl.current !== null &&
       bloomsLevelEl.current !== null &&
-      amountEl.current !== null
-    )
+      amountEl.current !== null &&
+      state.secondLanguage != null
+    ) {
+      console.log("Fetching cards");
+      
       fetchFlashCards(
         Number(amountEl.current.value),
-        "arabic",
+        state.secondLanguage,
         difficultyLevelEl.current.value,
         bloomsLevelEl.current.value
       )
@@ -45,6 +52,10 @@ const FlashCards = () => {
           // Handle error
           console.log(error);
         });
+    } else {
+      console.log("Something went wrong");
+    }
+      
   };
 
   useEffect(() => {
@@ -66,7 +77,11 @@ const FlashCards = () => {
       <form className={"flashCardHeader"} onSubmit={handleSubmit}>
         <div className={"form-group"}>
           <label htmlFor="difficultyLevel">Difficulty</label>
-          <select id="difficultyLevel" ref={difficultyLevelEl}>
+          <select
+            id="difficultyLevel"
+            ref={difficultyLevelEl}
+            style={{ borderRadius: "1em", padding: "0.5em" }}
+          >
             <option value={"easy"}>Easy</option>
             <option value={"medium"}>Medium</option>
             <option value={"hard"}>Hard</option>
@@ -75,7 +90,11 @@ const FlashCards = () => {
 
         <div className={"form-group"}>
           <label htmlFor="bloomsLevel">Blooms Level</label>
-          <select id="bloomsLevel" ref={bloomsLevelEl}>
+          <select
+            id="bloomsLevel"
+            ref={bloomsLevelEl}
+            style={{ borderRadius: "1em", padding: "0.5em" }}
+          >
             {bloomsLevels.map((blooms: string, index: number) => {
               return <option value={blooms}>{blooms}</option>;
             })}
@@ -91,6 +110,7 @@ const FlashCards = () => {
             step={"1"}
             defaultValue={10}
             ref={amountEl}
+            style={{ borderRadius: "1em", padding: "0.5em" }}
           ></input>
         </div>
 

@@ -26,7 +26,6 @@ const JoinRoom = () => {
   const handleJoinRoom = useCallback(
     (data: { emailId: any; roomNumber: any }) => {
       const { emailId, roomNumber } = data;
-      // console.log(`${emailId} &&& ${roomNumber}`);
       navigate(`/joinroom/${roomNumber}`);
     },
     []
@@ -40,24 +39,49 @@ const JoinRoom = () => {
   }, [handleJoinRoom, socket]);
 
   return (
-    <Box width={"100%"} height={"100%"} display={"grid"} gap={"1.5rem"}>
-      <form onSubmit={handleSubmit}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+          borderRadius: "0.5em",
+          padding: "2px",
+        }}
+      >
         <TextField
           label="Email ID"
           value={emailId}
           onChange={(event) => setEmailId(event.target.value)}
-          sx={{ color: palette.grey[300] }}
+          sx={{ backgroundColor: "white", borderRadius: "1em" }}
         />
         <TextField
           label="Room Number"
           value={roomNumber}
           onChange={(event) => setRoomNumber(event.target.value)}
-          sx={{ color: palette.grey[300] }}
+          sx={{ backgroundColor: "white", borderRadius: "1em" }}
         />
-        <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
+        <Button
+          sx={{
+            borderRadius: "1em",
+            padding: "1em 1em",
+            // margin: "1em",
+          }}
+          type="submit"
+          variant="outlined"
+        >
           Join
         </Button>
-      </form>
+      </Box>
     </Box>
   );
 };

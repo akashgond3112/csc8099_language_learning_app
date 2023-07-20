@@ -11,6 +11,7 @@ import Report from "./pages/report";
 import Leaderboard from "./pages/leaderBoard";
 import RootLayout from "./layouts/Root";
 import ErrorPage from "./pages/utils/error";
+import LoginRegister from "./pages/loginSignUp";
 
 /* react routes */
 const router = createBrowserRouter([
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <LoginRegister />,
+      },
+      {
+        path: "/dashBoard",
         element: <Dashboard />,
       },
       {

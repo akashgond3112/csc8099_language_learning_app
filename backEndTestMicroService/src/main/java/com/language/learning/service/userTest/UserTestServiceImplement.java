@@ -1,8 +1,8 @@
 package com.language.learning.service.userTest;
 
+import com.language.learning.dto.UserTestDto;
 import com.language.learning.entity.User;
 import com.language.learning.responses.userTest.UserTestResponse;
-import com.language.learning.dto.UserTestDto;
 import com.language.learning.service.questions.QuestionsService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**

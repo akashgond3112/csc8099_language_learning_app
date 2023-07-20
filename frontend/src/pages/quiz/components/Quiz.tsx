@@ -45,23 +45,27 @@ function Quiz({}: Props) {
   return (
     <Box>
       {/* display Question */}
-      <FlexBetween>
-        <Box padding={10}>
-          {isLoading && <Typography>Loading...</Typography>}
-          {error && <Typography>Something went wrong</Typography>}
-          {isFetching && <Typography>Fetching...</Typography>}
-          {isSuccess && <Question ques={data[trace]} />}
-        </Box>
-      </FlexBetween>
+      <Box padding={10}>
+        {isLoading && <Typography>Loading...</Typography>}
+        {error && <Typography>Something went wrong</Typography>}
+        {isFetching && <Typography>Fetching...</Typography>}
+        {isSuccess && <Question ques={data[trace]} />}
+      </Box>
       {/* display Next previous buttons */}
-      <FlexBetween>
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Box>
           <CustomButton text="Previous" onClick={onPrevious} />
         </Box>
         <Box>
           <CustomButton text="Next" onClick={onNext} />
         </Box>
-      </FlexBetween>
+      </Box>
     </Box>
   );
 }
