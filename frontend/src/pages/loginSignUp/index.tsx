@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import classes from "./LoginRegister.module.css";
+import { useAppDispatch, useAppSelector } from "../../hooks/utils";
+import { postLogIn, postRegister } from "../../store/actions/auth-actions";
 
 function LoginRegister() {
   const [displaySignInForm, setdisplaySignInForm] = useState(false);
@@ -14,14 +16,33 @@ function LoginRegister() {
   const [gender, setGender] = useState("");
   const [emptyFields, setEmptyFields] = useState<string[]>([]);
 
+  const { isLoggedIn } = useAppSelector((state) => state.auth);
+
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (displayLogin) {
-      navigate("/dashBoard");
+      dispatch(postLogIn({ username: email, password: pass }));
+      if (isLoggedIn) {
+        navigate("/dashBoard");
+      }
     } else if (displaySignInForm) {
-      navigate("/dashBoard");
+      dispatch(
+        postRegister({
+          firstName: firstName,
+          lastName: lastName,
+          location: location,
+          email: email,
+          password: pass,
+          mobileNumber: phone,
+          gender: gender,
+        })
+      );
+      if (isLoggedIn) {
+        navigate("/dashBoard");
+      }
     }
 
     const empty: string[] = [];

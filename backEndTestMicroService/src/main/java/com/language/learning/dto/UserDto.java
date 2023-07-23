@@ -39,8 +39,10 @@ public class UserDto {
     private String password;
 
 //    PATCH REQUEST
-    private String targetLanguage;
     private String nativeLanguage;
+    private String nativeLanguageImageUrl;
+    private String targetLanguage;
+    private String targetLanguageImageUrl;
 
 
 

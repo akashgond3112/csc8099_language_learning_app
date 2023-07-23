@@ -1,5 +1,6 @@
 package com.language.learning.dto;
 
+import com.language.learning.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,12 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserTestDto {
-    @NotEmpty(message = "userId should not be empty")
-    private Long userId;
-
-    @NotEmpty(message = "user test Id should not be empty")
-    private Long userTestId;
+    private Status status;
+    private Long totalPoints;
+    private Long gainedPoints;
+    private Long totalQuestions;
+    private Long questionAttempted;
+    private String currentItem;
+    private String testItems;
+    private Long currentIndex;
 }

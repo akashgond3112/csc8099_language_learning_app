@@ -1,9 +1,14 @@
 package com.language.learning.utilities;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.language.learning.config.auth.JwtTokenHelper;
+import com.language.learning.entity.User;
 import com.language.learning.exception.TokeExpiredException;
+import com.language.learning.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,7 +33,6 @@ public class Utilities {
      */
     public static String getCurrentUser(JwtTokenHelper jwtTokenHelper, HttpServletRequest request) {
         final String token;
-        final String userName;
 
         try {
             token = jwtTokenHelper.getToken(request);
@@ -44,6 +48,35 @@ public class Utilities {
             log.error(tokeExpiredException.getMessage());
         }
         return jwtTokenHelper.getUsernameFromToken(token);
+    }
+
+    /**
+     * @param jwtTokenHelper expect jwtTokenHelper object
+     * @param request        expect the HttpServletRequest
+     * @param userService    expect userService object
+     * @return the user entity object if the token in not expired
+     * @throws InputMismatchException if we cannot get the token from the request
+     * @throws TokeExpiredException   if the token is expired
+     */
+    public static User getCurrentUser(JwtTokenHelper jwtTokenHelper, HttpServletRequest request, UserService userService) {
+        final String token;
+        final String userName;
+
+        try {
+            token = jwtTokenHelper.getToken(request);
+        } catch (InputMismatchException inputMismatchException) {
+            throw new TokeExpiredException("Valid token wan not found");
+        }
+
+        try {
+            if (jwtTokenHelper.isTokenExpired(token)) {
+                throw new TokeExpiredException("Token has been expired");
+            }
+        } catch (TokeExpiredException tokeExpiredException) {
+            log.error(tokeExpiredException.getMessage());
+        }
+        userName = jwtTokenHelper.getUsernameFromToken(token);
+        return (User) userService.loadUserByUsername(userName);
     }
 
 
@@ -76,6 +109,21 @@ public class Utilities {
             }
         } catch (TokeExpiredException tokeExpiredException) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token has been expired");
+        }
+        return null;
+    }
+
+    public static JSONObject getJsonObject(JsonNode jsonNode){
+        try {
+            // Create an ObjectMapper
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // Convert JsonNode to JSON object
+            String jsonObject = objectMapper.writeValueAsString(jsonNode);
+            return new JSONObject(jsonObject);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

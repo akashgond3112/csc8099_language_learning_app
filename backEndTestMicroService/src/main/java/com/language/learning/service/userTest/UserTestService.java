@@ -2,7 +2,10 @@ package com.language.learning.service.userTest;
 
 import com.language.learning.dto.UserTestDto;
 import com.language.learning.entity.User;
+import com.language.learning.enums.Status;
 import com.language.learning.responses.userTest.UserTestResponse;
+
+import java.util.List;
 
 /**
  * @author agond
@@ -12,8 +15,9 @@ import com.language.learning.responses.userTest.UserTestResponse;
  */
 public interface UserTestService {
 
-    UserTestResponse createUserTest(User user, UserTestDto userTestDto);
-    UserTestResponse updateUserTest(User user, UserTestDto userTestDto);
+    UserTestResponse createUserTest(User user);
+    UserTestResponse updateUserTest(User user, UserTestDto userTestDto, Long userTestId);
     UserTestResponse getUserTest(User user, Long userTestId);
+    List<UserTestResponse> getAllUserTest(User user, Status status);
 
 }

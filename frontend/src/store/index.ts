@@ -4,6 +4,7 @@ import questionSlice from "./slice/question-slice";
 import resultSlice from "./slice/result-slice";
 import socketSlice from "./slice/socket-slice";
 import { api } from "../state/api";
+import authSlice from "./slice/auth-slice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     questions: questionSlice.reducer,
     result: resultSlice.reducer,
     socket: socketSlice.reducer,
+    auth: authSlice.reducer
   },
   middleware: (getDefault) => getDefault().concat(api.middleware),
 });

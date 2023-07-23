@@ -11,8 +11,6 @@ const JoinRoom = () => {
 
   const socket = useAppSelector((state) => state.socket.socket);
 
-  // const socket1 = io("http://localhost:8080");
-
   const navigate = useNavigate();
 
   const handleSubmit = useCallback(

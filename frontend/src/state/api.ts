@@ -61,30 +61,13 @@ export const fetchFlashCards = async (
 };
 
 
-export const login = async () => {
-  try {
 
-  } catch (err) {
-    console.log(err);
+export default axios.create({
+  baseURL: process.env.REACT_APP_BASE_USER_URL
+});
 
-  }
-}
-
-export const logout = async () => {
-  try {
-
-  } catch (err) {
-    console.log(err);
-
-  }
-}
-
-
-export const getUserInfo = async () => {
-  try {
-
-  } catch (err) {
-    console.log(err);
-
-  }
-}
+export const axiosPrivate = axios.create({
+  baseURL: process.env.REACT_APP_BASE_USER_URL,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true
+});

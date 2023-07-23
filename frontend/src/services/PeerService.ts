@@ -1,10 +1,11 @@
 class PeerService {
-  peer: any;
+  private static instance: PeerService;
+  peer: RTCPeerConnection;
 
   /**
    * Initializes the RTCPeerConnection instance with default ICE servers if not already created.
    */
-  constructor() {
+ /*  constructor() {
     if (!this.peer) {
       this.peer = new RTCPeerConnection({
         iceServers: [
@@ -16,6 +17,23 @@ class PeerService {
         ],
       });
     }
+  } */
+
+  private constructor() {
+    this.peer = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: ["stun:global.stun.twilio.com:3478"],
+        },
+      ],
+    });
+  }
+
+  public static getInstance(): PeerService {
+    if (!PeerService.instance) {
+      PeerService.instance = new PeerService();
+    }
+    return PeerService.instance;
   }
 
   /**
@@ -60,4 +78,5 @@ class PeerService {
   }
 }
 
-export default new PeerService();
+const peerServiceInstance = PeerService.getInstance();
+export default peerServiceInstance;

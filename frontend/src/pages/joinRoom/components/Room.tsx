@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../hooks/utils";
 import { useCallback, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
@@ -18,11 +18,13 @@ type Props = {};
 const Room = (props: Props) => {
   const params = useParams();
   const { palette } = useTheme();
+  const naviagte = useNavigate();
 
   const socket: Socket = useAppSelector((state) => state.socket.socket);
   const [remoteSocketId, setremoteSocketId] = useState<any | null>(null);
   const [myStream, setmyStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [isStreamingStarted, setIsStreamingStarted] = useState(false);
 
   const handleUserJoined = useCallback(
     (data: { emailId: any; roomNumber: any }) => {
@@ -63,10 +65,12 @@ const Room = (props: Props) => {
   );
 
   const sendStreams = useCallback(() => {
-    if (myStream !== null)
+    if (myStream !== null) {
       for (const track of myStream.getTracks()) {
-        PeerService.peer.addtrack(track, myStream);
+        PeerService.peer.addTrack(track, myStream);
       }
+      setIsStreamingStarted(true);
+    }
   }, [myStream]);
 
   const handleCallAccepted = useCallback(
@@ -139,6 +143,15 @@ const Room = (props: Props) => {
     handleUserJoined,
     socket,
   ]);
+
+  function endCall() {
+    setIsStreamingStarted(false);
+    setremoteSocketId(null);
+    setmyStream(null);
+    setRemoteStream(null);
+    setIsStreamingStarted(false);
+    naviagte("/joinroom");
+  }
 
   return (
     <Box
@@ -239,43 +252,58 @@ const Room = (props: Props) => {
         </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-          marginTop: "16px",
-        }}
-      >
-        {myStream && (
-          <Button
-            sx={{
-              borderRadius: "1em",
-              padding: "1em 5em",
-              // margin: "1em",
-            }}
-            type="submit"
-            variant="outlined"
-            onClick={sendStreams}
-          >
-            Send Stream
-          </Button>
-        )}
-        {remoteSocketId && (
-          <Button
-            sx={{
-              borderRadius: "1em",
-              padding: "1em 5em",
-            }}
-            type="submit"
-            variant="outlined"
-            onClick={handleCallUser}
-          >
-            Call
-          </Button>
-        )}
-      </Box>
+      {!isStreamingStarted ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+            marginTop: "16px",
+          }}
+        >
+          {myStream && (
+            <Button
+              sx={{
+                borderRadius: "1em",
+                padding: "1em 5em",
+                // margin: "1em",
+              }}
+              type="submit"
+              variant="outlined"
+              onClick={sendStreams}
+            >
+              Send Stream
+            </Button>
+          )}
+          {remoteSocketId && (
+            <Button
+              sx={{
+                borderRadius: "1em",
+                padding: "1em 5em",
+              }}
+              type="submit"
+              variant="outlined"
+              onClick={handleCallUser}
+            >
+              Call
+            </Button>
+          )}
+        </Box>
+      ) : (
+        <Button
+          sx={{
+            borderRadius: "1em",
+            padding: "1em 5em",
+            // margin: "1em",
+          }}
+          type="submit"
+          variant="outlined"
+          onClick={endCall}
+        >
+          End
+        </Button>
+      )}
     </Box>
   );
 };

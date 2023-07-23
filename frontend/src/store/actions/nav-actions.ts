@@ -1,6 +1,7 @@
 import { Dispatch } from "redux";
 import {
   setFirstLanguage,
+  setFirstLanguageImageUrl,
   setSecondLanguage,
   setSecondLanguageImageUrl,
 } from "../slice/nav-slice";
@@ -27,6 +28,15 @@ export const setTargetLanguageImageUrl =
   (result: string) => async (dispatch: Dispatch) => {
     try {
       dispatch(setSecondLanguageImageUrl(result));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+export const setNativeLanguageImageUrl =
+  (result: string) => async (dispatch: Dispatch) => {
+    try {
+      dispatch(setFirstLanguageImageUrl(result));
     } catch (error) {
       console.log(error);
     }

@@ -3,20 +3,25 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PixIcon from "@mui/icons-material/Pix";
 import FlexBetween from "../../component/FlexBetween";
-import { useAppSelector } from "../../hooks/utils";
+import { useAppDispatch, useAppSelector } from "../../hooks/utils";
 import ProfileAvatar from "./components/avatar";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useDispatch } from "react-redux";
+import { postLogout } from "../../store/actions/auth-actions";
 
 type Props = {};
 
 const Navbar = (props: Props) => {
   const { palette } = useTheme();
   const [selected, setSelected] = useState("dashboard");
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const state = useAppSelector((state) => state.nav);
+  const { token, isLoggedIn } = useAppSelector((state) => state.auth);
 
-  const isUserLoggedIn: boolean = true;
+  const handleLogut = () => {
+    if (token !== null) dispatch(postLogout(token));
+  };
 
   return (
     <FlexBetween mb="0.25rem" p="0.5rem 0rem" color={palette.grey[300]}>
@@ -31,6 +36,22 @@ const Navbar = (props: Props) => {
       </FlexBetween>
       {/* {RIGHT SIDE} */}
       <FlexBetween gap="2rem">
+        {state.firstLanguage != null &&
+          state.firstLanguageImageUrl !== null && (
+            <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
+              <Chip
+                avatar={
+                  <Avatar
+                    alt={state.firstLanguage}
+                    src={state.firstLanguageImageUrl}
+                  />
+                }
+                label={state.firstLanguage}
+                variant="filled"
+                sx={{ color: "white" }}
+              />
+            </Box>
+          )}
         {state.secondLanguage != null &&
           state.secondLanguageImageUrl !== null && (
             <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
@@ -119,14 +140,14 @@ const Navbar = (props: Props) => {
             Leader Board
           </Link>
         </Box>
-        {isUserLoggedIn && (
+        {isLoggedIn && state.imageUrl !== null && (
           <>
             <Box sx={{ "&:hover": { color: palette.primary[100] } }}>
-              <ProfileAvatar />
+              <ProfileAvatar imageUrl={state.imageUrl} />
             </Box>
             <Box>
-              <Button>
-                <LogoutIcon /> {`Logout` }
+              <Button onClick={() => handleLogut()}>
+                <LogoutIcon /> {`Logout`}
               </Button>
             </Box>
           </>

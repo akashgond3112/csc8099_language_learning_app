@@ -16,6 +16,7 @@ import com.language.learning.responses.authentication.AuthenticationResponse;
 import com.language.learning.responses.user.UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,7 @@ import java.util.List;
  * Copyright (C) 2023 Newcastle University, UK
  */
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
@@ -103,21 +105,49 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (user != null) {
             UserProfile userProfile = userProfileRepository.findByUserId(String.valueOf(user.getId()));
-            return UserResponse.builder()
-                    .userId(user.getId())
-                    .userName(user.getUsername())
-                    .email(user.getEmail())
-                    .gender(user.getGender())
-                    .mobileNumber(user.getMobileNumber())
-                    .firstName(userProfile.getFirstName())
-                    .lastName(userProfile.getLastName())
-                    .targetLanguage(userProfile.getTargetLanguage())
-                    .nativeLanguage(userProfile.getNativeLanguage())
-                    .imageUrl(userProfile.getImageUrl())
-                    .build();
+            return generateUserResponse(user, userProfile);
         } else {
             throw new RuntimeException("user cannot be null");
         }
+    }
+
+    /**
+     * @param user , Expecting the user Object
+     * @param userDto, Expecting the user DTO object
+     * @return the UserResponse Object
+     */
+    @Override
+    public UserResponse updateProfile(User user, UserDto userDto) {
+
+        UserProfile userProfile = userProfileRepository.findByUserId(String.valueOf(user.getId()));
+        if(userDto.getFirstName() !=null){
+            userProfile.setFirstName(userDto.getFirstName());
+        }
+        if(userDto.getLastName() !=null){
+            userProfile.setLastName(userDto.getLastName());
+        }
+        if(userDto.getLocation() !=null){
+            userProfile.setLocation(userDto.getLocation());
+        }
+        if(userDto.getNativeLanguage() !=null){
+            userProfile.setNativeLanguage(userDto.getNativeLanguage());
+        }
+        if(userDto.getNativeLanguageImageUrl() !=null){
+            userProfile.setNativeLanguageImageUrl(userDto.getNativeLanguageImageUrl());
+        }
+        if(userDto.getTargetLanguage() !=null){
+            userProfile.setTargetLanguage(userDto.getTargetLanguage());
+        }
+        if(userDto.getTargetLanguageImageUrl() !=null){
+            userProfile.setTargetLanguageImageUrl(userDto.getTargetLanguageImageUrl());
+        }
+
+        try{
+            userProfileRepository.save(userProfile);
+        }catch (Exception exception){
+            log.info(exception.getMessage());
+        }
+        return generateUserResponse(user, userProfile);
     }
 
     @Override
@@ -192,5 +222,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 }
             }
         }
+    }
+
+
+
+    private UserResponse generateUserResponse(User user, UserProfile userProfile){
+        return UserResponse.builder()
+                .userId(user.getId())
+                .userName(user.getUsername())
+                .email(user.getEmail())
+                .gender(user.getGender())
+                .mobileNumber(user.getMobileNumber())
+                .firstName(userProfile.getFirstName())
+                .lastName(userProfile.getLastName())
+                .nativeLanguage(userProfile.getNativeLanguage())
+                .nativeLanguageImageUrl(userProfile.getNativeLanguageImageUrl())
+                .targetLanguage(userProfile.getTargetLanguage())
+                .targetLanguageImageUrl(userProfile.getTargetLanguageImageUrl())
+                .imageUrl(userProfile.getImageUrl())
+                .build();
     }
 }

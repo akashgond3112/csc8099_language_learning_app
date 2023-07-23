@@ -33,17 +33,18 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-function ProfileAvatar() {
+type Props = {
+  imageUrl: string;
+};
+
+function ProfileAvatar({ imageUrl }: Props) {
   return (
     <StyledBadge
       overlap="circular"
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       variant="dot"
     >
-      <Avatar
-        alt="Remy Sharp"
-        src={`https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60`}
-      />
+      <Avatar alt="Remy Sharp" src={imageUrl} />
     </StyledBadge>
   );
 }

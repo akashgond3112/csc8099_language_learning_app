@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,9 +28,9 @@ public class UserTestResponse {
     private Long gainedPoints;
     private Long totalQuestions;
     private Long questionAttempted;
-    private int currentIndex;
     private String currentItem;
     private String testItems;
-    private LocalDateTime updated_at;
+    private Long currentIndex;
     private List<UserTestItemResponse> userTestItemResponses;
+    private LocalDateTime updated_at;
 }

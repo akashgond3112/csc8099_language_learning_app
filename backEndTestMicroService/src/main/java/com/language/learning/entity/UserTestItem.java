@@ -1,7 +1,9 @@
 package com.language.learning.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.language.learning.enums.Status;
+import com.language.learning.utilities.JsonNodeConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,22 +34,22 @@ public class UserTestItem {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "userId", nullable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "userTestId", nullable = false, updatable = false)
+    @JoinColumn(name = "user_test_id", nullable = false, updatable = false)
     @JsonIgnore
     private UserTest userTest;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(nullable = false, name = "totalPoints")
+    @Column(nullable = false, name = "total_points")
     private Long totalPoints;
 
-    @Column(nullable = true, name = "gainedPoints")
+    @Column(nullable = true, name = "gained_points")
     private Long gainedPoints;
 
     @Column(nullable = true, name = "answer")
@@ -62,6 +64,7 @@ public class UserTestItem {
     private LocalDateTime updated_at;
 
     @Column(nullable = false, name = "content")
-    private String content;
+    @Convert(converter = JsonNodeConverter.class)
+    private JsonNode content;
 
 }

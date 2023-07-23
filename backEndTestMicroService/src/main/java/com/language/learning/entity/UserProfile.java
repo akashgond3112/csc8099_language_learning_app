@@ -49,4 +49,10 @@ public class UserProfile {
     @Column(nullable = true, name = "target_language")
     private String targetLanguage;
 
+    @Column(nullable = true, name = "native_language_image_url")
+    private String nativeLanguageImageUrl;
+
+    @Column(nullable = true, name = "target_language_image_url")
+    private String targetLanguageImageUrl;
+
 }

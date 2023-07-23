@@ -1,15 +1,11 @@
 import { BoxProps, Box, Chip, Avatar } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import CountryCard from "./CountryCard";
 import { Country } from "../../../state/types";
 import CustomizedSnackbars from "../../../component/CustomizedSnackbars";
 
-import {
-  setNativeLanguage,
-  setTargetLanguage,
-  setTargetLanguageImageUrl,
-} from "../../../store/actions/nav-actions";
-import { useAppDispatch } from "../../../hooks/utils";
+import { useAppDispatch, useAppSelector } from "../../../hooks/utils";
+import { updateUserInfo } from "../../../store/actions/auth-actions";
 
 type Props = {
   isNative: boolean;
@@ -45,6 +41,8 @@ let tmp: String = "";
 function CountryBox({ isNative, countries }: Props) {
   const dispatch = useAppDispatch();
 
+  const { token } = useAppSelector((state) => state.auth);
+
   const [selectedNativeLanguage, setselectedNativeLanguage] = useState(false);
   const [selectedNativeCountryName, setSelectednativeCountryName] =
     useState("");
@@ -64,10 +62,23 @@ function CountryBox({ isNative, countries }: Props) {
       setselectedNativeLanguage(true);
       setSelectednativeCountryName(_Country.name);
       setSelectedNativeCountryImageUrl(_Country.url);
-
-      
-      dispatch(setNativeLanguage(_Country.name));
       tmp = _Country.name;
+
+      /*Send a patch request to server to update the profile the info in redux store */
+
+      if (
+        token !== null &&
+        _Country.name !== undefined &&
+        _Country.url !== undefined &&
+        _Country.name.length !== 0 &&
+        _Country.url.length !== 0
+      )
+        dispatch(
+          updateUserInfo(token, {
+            nativeLanguage: _Country.name,
+            nativeLanguageImageUrl: _Country.url,
+          })
+        );
     } else if (
       !_isNativeIndex &&
       _Country !== undefined &&
@@ -76,10 +87,22 @@ function CountryBox({ isNative, countries }: Props) {
       setSelectedLanguageToLearn(true);
       setSelectedLanguageToLearnName(_Country.name);
       setSelectedLanguageToLearnImageUrl(_Country.url);
-      dispatch(setTargetLanguage(_Country.name));
 
+      /*Send a patch request to server to update the profile the info in redux store */
 
-      dispatch(setTargetLanguageImageUrl(_Country.url));
+      if (
+        token !== null &&
+        _Country.name !== undefined &&
+        _Country.url !== undefined &&
+        _Country.name.length !== 0 &&
+        _Country.url.length !== 0
+      )
+        dispatch(
+          updateUserInfo(token, {
+            targetLanguage: _Country.name,
+            targetLanguageImageUrl: _Country.url,
+          })
+        );
     } else {
       setError(true);
       setErrorMessage("Both native and lanuage to learn cannot be same");

@@ -16,22 +16,25 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class QuestionsServiceImplement implements QuestionsService {
 
-	@Value("${external.content.api.url}")
-	private String baseUrl;
+    @Value("${external.content.api.url}")
+    private String baseUrl;
 
-	@Value("${external.content.api.questions}")
-	private String urlPathQuestions;
+    @Value("${external.content.api.questions}")
+    private String urlPathQuestions;
 
 
-	@Autowired
-	private RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
-	@Override
-	public Object getAllQuestions() {
-		UriComponents build = null;
-		build = UriComponentsBuilder.newInstance().scheme("http").host(baseUrl).path(urlPathQuestions).build();
-		System.out.println("URL : " + build.toUriString());
-		return restTemplate.getForObject(build.toUriString(), Object.class);
-	}
+    @Override
+    public Object getAllQuestions() {
+        UriComponents build = null;
+        build = UriComponentsBuilder.newInstance().scheme("http").host(baseUrl).path(urlPathQuestions).build();
+        try {
+            return restTemplate.getForObject(build.toUriString(), Object.class);
+        } catch (Exception exception) {
+            throw new RuntimeException("Not able to fetch the question, check if the service is running.");
+        }
+    }
 
 }

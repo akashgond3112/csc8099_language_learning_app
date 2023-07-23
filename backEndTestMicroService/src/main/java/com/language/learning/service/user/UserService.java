@@ -24,6 +24,8 @@ public interface UserService {
     AuthenticationResponse login(AuthenticationRequest request, AuthenticationManager authenticationManager);
     UserResponse getUserInfo(User user);
 
+    UserResponse updateProfile(User user, UserDto userDto);
+
     User findUserByEmail(String email);
 
     List<User> findAllUsers();

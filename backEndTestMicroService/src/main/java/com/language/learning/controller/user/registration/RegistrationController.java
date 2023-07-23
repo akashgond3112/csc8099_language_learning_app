@@ -33,7 +33,8 @@ public class RegistrationController {
         User existingUser = userService.findUserByEmail(userDto.getEmail());
 
         if (existingUser == null) {
-            return ResponseEntity.ok(userService.register(userDto));
+            return new ResponseEntity<>(userService.register(userDto), HttpStatus.CREATED);
+//            return ResponseEntity.ok(userService.register(userDto));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is already registered!");
 

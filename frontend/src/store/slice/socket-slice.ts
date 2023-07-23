@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import io from "socket.io-client";
 
-const _socket = io("http://localhost:8080");
+const _socket = io("http://localhost:8081");
 
 interface SocketState {
   socket: any;

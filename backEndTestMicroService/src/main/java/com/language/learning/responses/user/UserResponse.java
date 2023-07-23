@@ -27,5 +27,7 @@ public class UserResponse {
     private String lastName;
     private String imageUrl;
     private String nativeLanguage;
+    private String nativeLanguageImageUrl;
     private String targetLanguage;
+    private String targetLanguageImageUrl;
 }

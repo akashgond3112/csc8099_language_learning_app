@@ -10,9 +10,7 @@ import { useAppSelector, useAppDispatch } from "../../../hooks/utils";
 import { useGetQuestionsQuery } from "../../../state/api";
 import Question from "./Question";
 
-type Props = {};
-
-function Quiz({}: Props) {
+function Quiz() {
   const dispatch = useAppDispatch();
 
   const { data, error, isLoading, isFetching, isSuccess } =

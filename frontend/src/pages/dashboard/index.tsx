@@ -1,11 +1,21 @@
 import { Country } from "../../state/types";
 import image from "../../assets/images/multiLanguage.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LanguageSelect from "./components/LanguageSelect";
 import Popup from "../../component/Popup";
+import { useAppDispatch, useAppSelector } from "../../hooks/utils";
+import { getUserInfo } from "../../store/actions/auth-actions";
 
 export default function Dashboard() {
+  const dispatch = useAppDispatch();
+
   const [openPopup, setopenPopup] = useState(false);
+
+  const { token } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (token !== null) dispatch(getUserInfo(token));
+  }, []);
 
   const handleClose = () => {
     setopenPopup(!openPopup);
