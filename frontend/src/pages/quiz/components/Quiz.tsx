@@ -1,53 +1,119 @@
-import { Box, Typography } from "@mui/material";
-import FlexBetween from "../../../component/FlexBetween";
+import { Box } from "@mui/material";
 import CustomButton from "../../../component/CustomButton";
-import { useEffect } from "react";
-import {
-  MoveNextQuestion,
-  MovePreviousQuestion,
-} from "../../../store/actions/question-action";
-import { useAppSelector, useAppDispatch } from "../../../hooks/utils";
-import { useGetQuestionsQuery } from "../../../state/api";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "../../../hooks/utils";
 import Question from "./Question";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { UserTestDetail } from "../../../state/types";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Quiz() {
-  const dispatch = useAppDispatch();
+  const axiosprivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const { data, error, isLoading, isFetching, isSuccess } =
-    useGetQuestionsQuery();
+  const [userTest, setUserTests] = useState<UserTestDetail | undefined>();
+
+  const key = window.location.pathname.split("/")[2];
+
+  /* const { data, error, isLoading, isFetching, isSuccess } =
+    useGetQuestionsQuery(); */
 
   const trace = useAppSelector((state) => state.questions.trace);
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+    const getUserTests = async () => {
+      try {
+        const response = await axiosprivate.get(`/api/v1/user/test/${key}`, {
+          signal: controller.signal,
+        });
+
+        isMounted && setUserTests(response.data);
+      } catch (err) {
+        console.error("Something went wrong", err);
+        navigate("/", { state: { from: location }, replace: true });
+      }
+    };
+
+    getUserTests();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     console.log(trace);
   }, [trace]);
 
   function onNext() {
-    if (data !== undefined && trace < data.length) {
-      console.log("Clicked on Next" + data.length);
-      dispatch(MoveNextQuestion());
-    } else {
-      return;
-    }
+    let isMounted = true;
+    const controller = new AbortController();
+    const getUserTests = async () => {
+      try {
+        const response = await axiosprivate.get(
+          `/api/v1/user/test/${key}?intent=next`,
+          {
+            signal: controller.signal,
+          }
+        );
+
+        isMounted && setUserTests(response.data);
+      } catch (err) {
+        console.error("Something went wrong", err);
+        navigate("/", { state: { from: location }, replace: true });
+      }
+    };
+
+    getUserTests();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }
 
   function onPrevious() {
-    console.log("Clicked on Previous");
-    if (trace > 0) {
-      dispatch(MovePreviousQuestion());
-    } else {
-      return;
-    }
+    let isMounted = true;
+    const controller = new AbortController();
+    const getUserTests = async () => {
+      try {
+        const response = await axiosprivate.get(
+          `/api/v1/user/test/${key}?intent=previous`,
+          {
+            signal: controller.signal,
+          }
+        );
+
+        isMounted && setUserTests(response.data);
+      } catch (err) {
+        console.error("Something went wrong", err);
+        navigate("/", { state: { from: location }, replace: true });
+      }
+    };
+
+    getUserTests();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }
 
   return (
     <Box>
       {/* display Question */}
       <Box padding={10}>
-        {isLoading && <Typography>Loading...</Typography>}
+        {/*         {isLoading && <Typography>Loading...</Typography>}
         {error && <Typography>Something went wrong</Typography>}
         {isFetching && <Typography>Fetching...</Typography>}
-        {isSuccess && <Question ques={data[trace]} />}
+        {isSuccess && <Question ques={data[trace]} />} */}
+        {userTest && (
+          <Question userTestItemResponses={userTest.userTestItemResponses} />
+        )}
       </Box>
       {/* display Next previous buttons */}
       <Box

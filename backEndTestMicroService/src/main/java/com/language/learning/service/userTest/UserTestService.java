@@ -17,7 +17,7 @@ public interface UserTestService {
 
     UserTestResponse createUserTest(User user);
     UserTestResponse updateUserTest(User user, UserTestDto userTestDto, Long userTestId);
-    UserTestResponse getUserTest(User user, Long userTestId);
+    UserTestResponse getUserTest(User user, Long userTestId, String intent);
     List<UserTestResponse> getAllUserTest(User user, Status status);
 
 }

@@ -2,9 +2,7 @@ import React from "react";
 import Navbar from "../pages/navbar";
 import { Outlet } from "react-router-dom";
 
-type Props = {};
-
-function RootLayout({}: Props) {
+function RootLayout() {
   return (
     <>
       <Navbar />

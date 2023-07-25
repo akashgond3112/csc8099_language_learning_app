@@ -3,11 +3,14 @@ import "./index.css";
 import { Provider } from "react-redux";
 import App from "./App";
 import { store } from "./store";
-
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <BrowserRouter>
+    <Provider store={store}>
+      <Routes>
+        <Route path="/*" element={<App />}></Route>
+      </Routes>
+    </Provider>
+  </BrowserRouter>
 );

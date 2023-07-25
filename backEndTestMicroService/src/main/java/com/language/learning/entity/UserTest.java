@@ -58,8 +58,7 @@ public class UserTest {
     private Long currentIndex;
 
     @Column(nullable = false, name = "current_item")
-    @Convert(converter = JsonNodeConverter.class)
-    private JsonNode currentItem;
+    private String currentItem;
 
     @Column(nullable = false, name = "test_items")
     private String testItems;

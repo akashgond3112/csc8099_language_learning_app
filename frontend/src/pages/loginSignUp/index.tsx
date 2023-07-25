@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./LoginRegister.module.css";
 import { useAppDispatch, useAppSelector } from "../../hooks/utils";
 import { postLogIn, postRegister } from "../../store/actions/auth-actions";
@@ -19,14 +19,19 @@ function LoginRegister() {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
 
   const navigate = useNavigate();
+  const loc = useLocation();
+  const from = loc.state?.from?.pathname || "/dashBoard";
+
   const dispatch = useAppDispatch();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (displayLogin) {
       dispatch(postLogIn({ username: email, password: pass }));
-      if (isLoggedIn) {
-        navigate("/dashBoard");
+      if (from === `/dashBoard`) {
+        navigate(from, { replace: false });
+      } else {
+        navigate(from, { replace: true });
       }
     } else if (displaySignInForm) {
       dispatch(
@@ -40,9 +45,7 @@ function LoginRegister() {
           gender: gender,
         })
       );
-      if (isLoggedIn) {
-        navigate("/dashBoard");
-      }
+      navigate(from, { replace: true });
     }
 
     const empty: string[] = [];

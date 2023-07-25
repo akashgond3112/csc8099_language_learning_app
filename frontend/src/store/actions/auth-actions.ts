@@ -1,6 +1,8 @@
 import { Dispatch } from "redux"
-import { setIsLoggedIn, setRefreshToken, setToken } from "../slice/auth-slice"
-import axios from "axios";
+import { setIsLoggedIn, setRefreshToken, setToken, } from "../slice/auth-slice"
+import axios from "../../utils/Utillities";
+import setCookie from "../../utils/Utillities";
+import deleteCookie from "../../utils/Utillities";
 import { setFirstLanguage, setFirstLanguageImageUrl, setImageUrl, setSecondLanguage, setSecondLanguageImageUrl } from "../slice/nav-slice";
 import { setLocalStorageItems, clearLocalStorageItems } from "../../utils/Utillities"
 
@@ -8,20 +10,22 @@ import { setLocalStorageItems, clearLocalStorageItems } from "../../utils/Utilli
 export const postRegister = (userRegister: object) => {
     return async (dispatch: Dispatch) => {
         try {
-            const url: string = `${process.env.REACT_APP_BASE_USER_URL}/api/v1/user/register`;
+            const url: string = `/api/v1/user/register`;
             const data = await axios.post(url, userRegister);
             if (data.status === 201) {
 
-                const accessTokenValue: string = data.data.get("access_token");
-                const refreshTokenValue: string = data.data.get("refresh_token");
                 const isLoggedInValue: boolean = true;
 
-                dispatch(setToken(accessTokenValue));
-                dispatch(setRefreshToken(refreshTokenValue));
                 dispatch(setIsLoggedIn(isLoggedInValue));
+                dispatch(setToken(data.data.access_token));
+                dispatch(setRefreshToken(data.data.refresh_token));
 
-                /* Set the value in local storage as well , so that in case page get refreshed, next the default value will get set by redux in intial sate */
-                setLocalStorageItems(accessTokenValue, refreshTokenValue, isLoggedInValue.toString());
+                /* Set the value in local storage as well*/
+                setLocalStorageItems(data.data.access_token, data.data.refresh_token, isLoggedInValue.toString());
+                /* Set the tokens in cookies */
+                setCookie("access_token", data.data.access_token);
+                setCookie("refresh_token", data.data.refresh_token);
+
             } else {
                 throw new Error(data.data);
             }
@@ -36,25 +40,23 @@ export const postLogIn = (userCredentials: object) => {
 
     return async (dispatch: Dispatch) => {
         try {
-            const url: string = `${process.env.REACT_APP_BASE_USER_URL}/api/v1/auth/login`;
+            const url: string = `/api/v1/auth/login`;
             const data = await axios.post(url, userCredentials);
 
             if (data.status === 200) {
 
-                const accessTokenValue: string = data.data.access_token;
-                const refreshTokenValue: string = data.data.refresh_token;
                 const isLoggedInValue: boolean = true;
 
-                console.log(accessTokenValue);
-                console.log(refreshTokenValue);
+                dispatch(setToken(data.data.access_token));
+                dispatch(setRefreshToken(data.data.refresh_token));
+                dispatch(setIsLoggedIn(true));
 
+                /* Set the value in local storage as well*/
+                setLocalStorageItems(data.data.access_token, data.data.refresh_token, isLoggedInValue.toString());
+                /* Set the tokens in cookies */
+                setCookie("access_token", data.data.access_token);
+                setCookie("refresh_token", data.data.refresh_token);
 
-                dispatch(setToken(accessTokenValue));
-                dispatch(setRefreshToken(refreshTokenValue));
-                dispatch(setIsLoggedIn(isLoggedInValue));
-
-                /* Set the value in local storage as well , so that in case page get refreshed, next the default value will get set by redux in intial sate */
-                setLocalStorageItems(accessTokenValue, refreshTokenValue, isLoggedInValue.toString());
             } else {
                 throw new Error(data.data);
             }
@@ -65,6 +67,8 @@ export const postLogIn = (userCredentials: object) => {
 }
 
 export const getUserInfo = (token: string) => {
+    console.log("token : ", token);
+
     return async (dispatch: Dispatch) => {
         try {
             const config = {
@@ -73,7 +77,7 @@ export const getUserInfo = (token: string) => {
                 },
             };
 
-            const url: string = `${process.env.REACT_APP_BASE_USER_URL}/api/v1/auth/userinfo`;
+            const url: string = `/api/v1/auth/userinfo`;
             const data = await axios.get(url, config);
             if (data.status === 200) {
                 if (data.data.nativeLanguage) dispatch(setFirstLanguage(data.data.nativeLanguage))
@@ -81,6 +85,11 @@ export const getUserInfo = (token: string) => {
                 if (data.data.targetLanguage) dispatch(setSecondLanguage(data.data.targetLanguage))
                 if (data.data.targetLanguageImageUrl) dispatch(setSecondLanguageImageUrl(data.data.targetLanguageImageUrl))
                 if (data.data.imageUrl) dispatch(setImageUrl(data.data.imageUrl))
+
+
+                /* Set local storage */
+                /* Set the value in local storage as well*/
+                setLocalStorageItems(undefined, undefined, undefined, data.data.userId, data.data.email);
             } else {
                 throw new Error(data.data);
             }
@@ -120,7 +129,6 @@ export const updateUserInfo = (token: string, userProfile: object) => {
 };
 
 
-
 export const postLogout = (token: string) => {
     return async (dispatch: Dispatch) => {
         try {
@@ -131,15 +139,19 @@ export const postLogout = (token: string) => {
             };
 
             const url: string = `${process.env.REACT_APP_BASE_USER_URL}/api/v1/auth/logout`;
-            const data = await axios.post(url, config);
+            const data = await axios.post(url, null, config);
             if (data.status === 200) {
                 dispatch(setToken(""));
                 dispatch(setRefreshToken(""));
                 dispatch(setIsLoggedIn(false));
                 dispatch(setFirstLanguage(""))
+                dispatch(setFirstLanguageImageUrl(""))
                 dispatch(setSecondLanguage(""))
+                dispatch(setSecondLanguageImageUrl(""))
                 dispatch(setImageUrl(""));
                 clearLocalStorageItems();
+                deleteCookie("access_token");
+                deleteCookie("refresh_token");
             } else {
                 throw new Error(data.data);
             }

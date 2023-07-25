@@ -31,6 +31,6 @@ public class UserTestResponse {
     private String currentItem;
     private String testItems;
     private Long currentIndex;
-    private List<UserTestItemResponse> userTestItemResponses;
+    private UserTestItemResponse userTestItemResponses;
     private LocalDateTime updated_at;
 }

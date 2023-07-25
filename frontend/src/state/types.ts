@@ -46,3 +46,31 @@ export interface NewFlashCardResponse {
   voice: string;
   words: Array<wordResponse>;
 }
+
+
+export interface UserTestDetail {
+  userId: number
+  testId: number
+  status: string
+  totalPoints: number
+  gainedPoints: number
+  totalQuestions: number
+  questionAttempted: number
+  currentItem: any
+  testItems: any
+  currentIndex: any
+  userTestItemResponses: UserTestItemResponses
+  updated_at: string
+
+}
+
+export interface UserTestItemResponses {
+  userId: number
+  testId: number
+  status: string
+  totalPoints: number
+  gainedPoints: number
+  answer: any
+  content: string
+  updated_at: string
+}

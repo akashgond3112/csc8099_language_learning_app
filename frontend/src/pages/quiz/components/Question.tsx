@@ -2,15 +2,18 @@ import { Box } from "@mui/material";
 import Mcq from "./Mcq";
 import Fib from "./FillBlank";
 import MatchQuestion from "./MatchTheFollowing";
-import { QuestionsResponse } from "../../../state/types";
+import { QuestionsResponse, UserTestItemResponses } from "../../../state/types";
 import AnimatedMcqQuestion from "./AnimatedMCQ";
 import WordBuilder from "./BuildWord";
 
 type Props = {
-  ques: QuestionsResponse;
+  // ques: QuestionsResponse;
+  userTestItemResponses: UserTestItemResponses;
 };
 
-function Question({ ques }: Props) {
+function Question({ userTestItemResponses }: Props) {
+  const ques: QuestionsResponse = JSON.parse(userTestItemResponses.content);
+
   return (
     <Box>
       {ques.type === "mcq" && <Mcq question={ques} />}

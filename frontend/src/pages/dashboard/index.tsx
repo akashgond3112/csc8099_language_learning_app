@@ -14,6 +14,8 @@ export default function Dashboard() {
   const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    console.log(token);
+    
     if (token !== null) dispatch(getUserInfo(token));
   }, []);
 

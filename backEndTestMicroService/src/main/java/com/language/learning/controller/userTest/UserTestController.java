@@ -97,7 +97,7 @@ public class UserTestController {
      * @return the user test response
      */
     @GetMapping("/user/test/{userTestId}")
-    public ResponseEntity<?> getUserTest(HttpServletRequest request, @PathVariable("userTestId") int userTestId) {
+    public ResponseEntity<?> getUserTest(HttpServletRequest request, @PathVariable("userTestId") int userTestId, @RequestParam(name = "intent", required = false) String intent) {
         ResponseEntity<Object> objectResponseEntity = Utilities.validateIsTokeExpired(jwtTokenHelper, request);
         if (objectResponseEntity != null) {
             return objectResponseEntity;
@@ -109,7 +109,7 @@ public class UserTestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
             try {
-                UserTestResponse userTestResponse = userTestService.getUserTest(user, (long) userTestId);
+                UserTestResponse userTestResponse = userTestService.getUserTest(user, (long) userTestId, intent);
                 return new ResponseEntity<>(userTestResponse, HttpStatus.OK);
             } catch (Exception exception) {
                 System.out.println("Got an exception , either user was not valid or token was expired.");
@@ -118,6 +118,7 @@ public class UserTestController {
 
         }
     }
+
 
     /**
      * @param status expect a status which can be either start/in-progress/completed
@@ -145,5 +146,6 @@ public class UserTestController {
 
         }
     }
+
 
 }

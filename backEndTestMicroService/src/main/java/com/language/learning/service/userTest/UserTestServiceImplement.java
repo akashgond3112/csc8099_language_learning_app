@@ -82,24 +82,9 @@ public class UserTestServiceImplement implements UserTestService {
             log.error(exception.getMessage());
         }
         userTest.setQuestionAttempted(0L);
-        userTest.setCurrentIndex(0L);
+        userTest.setCurrentIndex(1L);
         userTest.setTestItems(itemIdArray.toString());
-
-        /*
-         * Process the userItems and set the first JSONObject as the currentItem in the Set it as current item object.
-         * @throws JsonProcessingException If there's an error while processing JSON data.
-         */
-        if (!userItems.isEmpty()) {
-            JSONObject currentItem = userItems.iterator().next();
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                JsonNode jsonData = objectMapper.readTree(currentItem.toString());
-                userTest.setCurrentItem(jsonData);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+        userTest.setCurrentItem(itemIdArray.get(0));
         userTestRepository.save(userTest);
 
         /*Create user test item*/
@@ -112,7 +97,7 @@ public class UserTestServiceImplement implements UserTestService {
             userTestItem.setTotalPoints((long) item.getInt("total_points"));
             userTestItem.setGainedPoints(0L);
             userTestItem.setAnswer(null);
-
+            userTestItem.setUserTestItemId(item.getString("_id"));
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonNode jsonData = objectMapper.readTree(String.valueOf(item));
@@ -125,7 +110,7 @@ public class UserTestServiceImplement implements UserTestService {
         }
 
         /*Return user Test Response*/
-        return generateUserTestResponse(userTest, userTestItems);
+        return generateUserTestResponse(userTest, userTestItems.get(0));
     }
 
     @Override
@@ -142,31 +127,30 @@ public class UserTestServiceImplement implements UserTestService {
             userTest.setQuestionAttempted(userTest.getQuestionAttempted() + userTestDto.getQuestionAttempted());
         }
         if (userTestDto.getCurrentItem() != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                JsonNode jsonData = objectMapper.readTree(userTestDto.getCurrentItem());
-                userTest.setCurrentItem(jsonData);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+            userTest.setCurrentItem(userTestDto.getCurrentItem());
         }
         if (userTestDto.getCurrentIndex() != null) {
             userTest.setCurrentIndex(userTestDto.getCurrentIndex());
         }
         userTestRepository.save(userTest);
-        return generateUserTestResponse(userTest, userTestItemRepository.findAllByUserAndUserTest(user, userTest));
+        UserTestItem userTestItem = userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(userTest.getCurrentItem(), userTest, user);
+        return generateUserTestResponse(userTest, userTestItem);
     }
 
     @Override
-    public UserTestResponse getUserTest(User user, Long userTestId) {
+    public UserTestResponse getUserTest(User user, Long userTestId, String intent) {
+
+        /*Check is intent is null , if its null set it defaults to start else it can be previous or next. */
         /*Get the user test!*/
         UserTest userTest = userTestRepository.findByIdAndUser(userTestId, user);
         if (userTest == null)
             throw new UserTestException(String.format("Cannot find the assigned user test for test id %s for the user %s", userTestId, user.getId()));
-        List<UserTestItem> userTestItems = userTestItemRepository.findAllByUserAndUserTest(user, userTest);
-        if (userTestItems == null)
-            throw new UserTestException(String.format("Cannot find the assigned user test items for test id %s for the user %s", userTestId, user.getId()));
-        return generateUserTestResponse(userTest, userTestItems);
+
+        UserTestItem itemByIntent = getItemByIntent(userTest, intent);
+        if (itemByIntent == null)
+            throw new UserTestException(String.format("Cannot find the user test items for test id %s for the user %s, for the provided intent %s", userTestId, user.getId(), intent));
+
+        return generateUserTestResponse(userTest, itemByIntent);
     }
 
     /**
@@ -192,22 +176,17 @@ public class UserTestServiceImplement implements UserTestService {
         return userTestResponses;
     }
 
+    private UserTestResponse generateUserTestResponse(UserTest userTest, UserTestItem userTestItem) {
 
-    private UserTestResponse generateUserTestResponse(UserTest userTest, List<UserTestItem> userTestItem) {
-
-        List<UserTestItemResponse> userTestItemResponses = new ArrayList<>();
-
-        userTestItem.forEach(userTestItem1 -> {
-            userTestItemResponses.add(UserTestItemResponse.builder()
-                    .userId(userTest.getUser().getId())
-                    .testId(userTest.getId())
-                    .status(userTestItem1.getStatus().getValue())
-                    .content(userTestItem1.getContent().toString())
-                    .totalPoints(userTestItem1.getTotalPoints())
-                    .gainedPoints(userTestItem1.getGainedPoints())
-                    .answer(userTestItem1.getAnswer())
-                    .updated_at(userTestItem1.getUpdated_at()).build());
-        });
+        UserTestItemResponse userTestItemResponses = UserTestItemResponse.builder()
+                .userId(userTest.getUser().getId())
+                .testId(userTest.getId())
+                .status(userTestItem.getStatus().getValue())
+                .content(userTestItem.getContent().toString())
+                .totalPoints(userTestItem.getTotalPoints())
+                .gainedPoints(userTestItem.getGainedPoints())
+                .answer(userTestItem.getAnswer())
+                .updated_at(userTestItem.getUpdated_at()).build();
 
         return UserTestResponse.builder()
                 .userId(userTest.getUser().getId())
@@ -217,11 +196,11 @@ public class UserTestServiceImplement implements UserTestService {
                 .gainedPoints(userTest.getGainedPoints())
                 .totalQuestions(userTest.getTotalQuestions())
                 .questionAttempted(0L)
-                .currentItem(userTest.getCurrentItem().toString())
+                .currentItem(userTest.getCurrentItem())
                 .testItems(userTest.getTestItems())
                 .updated_at(userTest.getUpdated_at())
                 .userTestItemResponses(userTestItemResponses)
-                .currentIndex(0L)
+                .currentIndex(userTest.getCurrentIndex())
                 .build();
     }
 
@@ -234,8 +213,61 @@ public class UserTestServiceImplement implements UserTestService {
                 .totalPoints(userTest.getTotalPoints())
                 .gainedPoints(userTest.getGainedPoints())
                 .totalQuestions(userTest.getTotalQuestions())
-                .questionAttempted(0L)
+                .questionAttempted(userTest.getQuestionAttempted())
                 .updated_at(userTest.getUpdated_at())
                 .build();
+    }
+
+    public UserTestItem getItemByIntent(UserTest userTest, String intent) {
+        int currentIndex = -1;
+        JSONArray array = new JSONArray(userTest.getTestItems());
+
+        for (int i = 0; i < array.length(); i++) {
+            if (Objects.equals(array.get(i), userTest.getCurrentItem())) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        UserTestItem userTestItem = null;
+
+        if (currentIndex == -1) {
+            return null; // Item with the currentId not found in the list
+        }
+        if (intent == null) {
+            return userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(userTest.getCurrentItem(), userTest, userTest.getUser());
+        }
+
+        switch (Objects.requireNonNull(intent)) {
+            case "next" -> {
+                currentIndex = (currentIndex + 1) % array.length();
+                if (currentIndex == 0) {
+                    // The user is on the last item, so return the current item
+                    return userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(array.getString(currentIndex), userTest, userTest.getUser());
+                } else {
+                    userTestItem = userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(array.getString(currentIndex), userTest, userTest.getUser());
+                    userTest.setCurrentIndex((long) currentIndex);
+                    userTest.setCurrentItem(userTestItem.getUserTestItemId());
+                    userTestRepository.save(userTest);
+                }
+            }
+            case "previous" -> {
+                currentIndex = (currentIndex - 1 + array.length()) % array.length();
+                if (currentIndex == array.length() - 1) {
+                    // The user is on the first item, so return the current item
+                    return userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(array.getString(currentIndex), userTest, userTest.getUser());
+                } else {
+                    userTestItem = userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(array.getString(currentIndex), userTest, userTest.getUser());
+                    userTest.setCurrentIndex((long) currentIndex);
+                    userTest.setCurrentItem(userTestItem.getUserTestItemId());
+                    userTestRepository.save(userTest);
+                }
+            }
+            case "start" -> {
+                return userTestItemRepository.findByUserTestItemIdAndUserTestAndUser(userTest.getCurrentItem(), userTest, userTest.getUser());
+            }
+        }
+
+        return userTestItem;
     }
 }

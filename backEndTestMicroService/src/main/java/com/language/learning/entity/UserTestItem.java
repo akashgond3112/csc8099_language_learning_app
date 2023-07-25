@@ -55,6 +55,9 @@ public class UserTestItem {
     @Column(nullable = true, name = "answer")
     private String answer;
 
+    @Column(nullable = true, name = "user_test_item_id")
+    private String userTestItemId;
+
     @Column(nullable = false,updatable = false)
     @CreationTimestamp
     private LocalDateTime created_at;
