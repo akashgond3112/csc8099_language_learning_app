@@ -1,19 +1,28 @@
-import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { useState } from "react";
+import { Box, Typography, Alert, AlertTitle } from "@mui/material";
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import { QuestionsResponse } from "../../../state/types";
+import { QuestionsResponse, UserTestItemResponses } from "../../../state/types";
+import CustomButton from "../../../component/CustomButton";
 
 type Props = {
-  question: QuestionsResponse;
+  userTestItemResponses: UserTestItemResponses;
 };
 
-function MatchQuestion({ question }: Props) {
+function MatchQuestion({ userTestItemResponses }: Props) {
+  const question: QuestionsResponse = JSON.parse(userTestItemResponses.content);
+
   const [isAnswerChanged, setIsAnswerChanged] = useState(false);
+  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(
+    userTestItemResponses.status === `completed`
+  );
+  const [isCorrect, setIsCorrect] = useState(
+    userTestItemResponses?.isCorrect ?? false
+  );
   const [matchedOptions, setMatchedOptions] = useState(
     question.options.definitions
   );
@@ -30,6 +39,7 @@ function MatchQuestion({ question }: Props) {
   };
 
   const handleSubmit = () => {
+     setIsAnswerSubmitted(true);
     if (isAnswerChanged) {
       console.log(matchedOptions);
       setIsAnswerChanged(false);
@@ -47,10 +57,12 @@ function MatchQuestion({ question }: Props) {
     >
       {/*Question  */}
       <Box>
-        <Typography variant="h2">{question.question}</Typography>
+        <Typography variant="h2" color={"white"}>
+          {question.question}
+        </Typography>
       </Box>
       {/* Terms and Definitions Options */}
-      <Box>
+      <Box sx={{ paddingBottom: "2em" }}>
         <Box
           sx={{
             display: "flex",
@@ -142,18 +154,28 @@ function MatchQuestion({ question }: Props) {
           </Box>
         </Box>
       </Box>
-      <Box>
-        {isAnswerChanged && (
-          <Button
-            variant="outlined"
-            color="primary"
+      {/* Evaluation */}
+      {isAnswerSubmitted && !isCorrect && (
+        <Alert severity="error">
+          <AlertTitle>InCorrect</AlertTitle>
+          Sorry, wrong answer!
+        </Alert>
+      )}
+      {isAnswerSubmitted && isCorrect && (
+        <Alert severity="success">
+          <AlertTitle>Correct</AlertTitle>
+          You got it!
+        </Alert>
+      )}
+      {!isAnswerSubmitted && isAnswerChanged && (
+        <Box>
+          <CustomButton
+            text="Check Answer"
             onClick={handleSubmit}
-            sx={{ mt: 1, mr: 1 }}
-          >
-            Check Answer
-          </Button>
-        )}
-      </Box>
+            disabled={userTestItemResponses.status === `completed`}
+          />
+        </Box>
+      )}
     </Box>
   );
 }

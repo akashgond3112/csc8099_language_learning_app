@@ -67,10 +67,15 @@ export interface UserTestDetail {
 export interface UserTestItemResponses {
   userId: number
   testId: number
+  testItemId: string
   status: string
   totalPoints: number
   gainedPoints: number
   answer: any
   content: string
+  difficultyLevel: string
+  bloomsLevel: string
+  type: string
+  isCorrect: boolean
   updated_at: string
 }

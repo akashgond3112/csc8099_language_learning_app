@@ -55,8 +55,20 @@ public class UserTestItem {
     @Column(nullable = true, name = "answer")
     private String answer;
 
-    @Column(nullable = true, name = "user_test_item_id")
+    @Column(nullable = false, name = "user_test_item_id")
     private String userTestItemId;
+
+    @Column(nullable = false, name = "blooms_level")
+    private String bloomsLevel;
+
+    @Column(nullable = false, name = "difficulty_level")
+    private String difficultyLevel;
+
+    @Column(nullable = false, name = "type")
+    private String type;
+
+    @Column(nullable = true, name = "is_correct")
+    private Boolean isCorrect;
 
     @Column(nullable = false,updatable = false)
     @CreationTimestamp

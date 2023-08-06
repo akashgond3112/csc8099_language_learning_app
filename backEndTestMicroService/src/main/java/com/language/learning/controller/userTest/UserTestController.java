@@ -2,6 +2,7 @@ package com.language.learning.controller.userTest;
 
 import com.language.learning.config.auth.JwtTokenHelper;
 import com.language.learning.dto.UserTestDto;
+import com.language.learning.dto.UserTestItemDto;
 import com.language.learning.entity.User;
 import com.language.learning.enums.Status;
 import com.language.learning.repository.UserRepository;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author agond
@@ -147,5 +147,31 @@ public class UserTestController {
         }
     }
 
+    /**
+     * @return UserTestResponse
+     */
+    @PatchMapping("/user/test/{userTestId}/item")
+    public ResponseEntity<?> evaluateUserTestItem(HttpServletRequest request, @PathVariable String userTestId, @RequestBody UserTestItemDto userTestItemDto) {
+
+        ResponseEntity<Object> objectResponseEntity = Utilities.validateIsTokeExpired(jwtTokenHelper, request);
+        if (objectResponseEntity != null) {
+            return objectResponseEntity;
+        }
+
+        User user = userRepository.findByUsername(Utilities.getCurrentUser(jwtTokenHelper, request));
+
+        if (user == null || userTestId == null) {
+            return new ResponseEntity<>("User test Id not present in path variable.", HttpStatus.BAD_REQUEST);
+        } else {
+            try {
+                UserTestResponse userTestResponse = userTestService.evaluateTestItem(user, Long.valueOf(userTestId), userTestItemDto);
+                return new ResponseEntity<>(userTestResponse, HttpStatus.OK);
+            } catch (Exception exception) {
+                System.out.println("Got an exception , either user was not valid or token was expired.");
+                return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+
+        }
+    }
 
 }

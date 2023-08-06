@@ -3,20 +3,29 @@ import image from "../../assets/images/multiLanguage.jpg";
 import { useEffect, useState } from "react";
 import LanguageSelect from "./components/LanguageSelect";
 import Popup from "../../component/Popup";
-import { useAppDispatch, useAppSelector } from "../../hooks/utils";
+import { useAppDispatch } from "../../hooks/utils";
 import { getUserInfo } from "../../store/actions/auth-actions";
+import { useNavigate, useLocation } from "react-router-dom";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();
-
+  const axiosprivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [openPopup, setopenPopup] = useState(false);
 
-  const { token } = useAppSelector((state) => state.auth);
-
   useEffect(() => {
-    console.log(token);
-    
-    if (token !== null) dispatch(getUserInfo(token));
+    let isMounted = true;
+    const controller = new AbortController();
+    dispatch(
+      getUserInfo(isMounted, controller, axiosprivate, location, navigate)
+    );
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, []);
 
   const handleClose = () => {

@@ -2,7 +2,6 @@ import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { useMemo } from "react";
 import { themeSettings } from "./theme";
 import {
-  createBrowserRouter,
   Route,
   Routes,
 } from "react-router-dom";

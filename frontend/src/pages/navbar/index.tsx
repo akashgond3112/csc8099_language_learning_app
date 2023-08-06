@@ -1,13 +1,13 @@
 import { Avatar, Box, Button, Chip, Typography, useTheme } from "@mui/material";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import PixIcon from "@mui/icons-material/Pix";
 import FlexBetween from "../../component/FlexBetween";
 import { useAppDispatch, useAppSelector } from "../../hooks/utils";
 import ProfileAvatar from "./components/avatar";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useDispatch } from "react-redux";
-import { postLogout } from "../../store/actions/auth-actions";
+import { getUserInfo, postLogout } from "../../store/actions/auth-actions";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 type Props = {};
 
@@ -15,6 +15,9 @@ const Navbar = (props: Props) => {
   const { palette } = useTheme();
   const [selected, setSelected] = useState("dashboard");
   const dispatch = useAppDispatch();
+  const axiosprivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const state = useAppSelector((state) => state.nav);
   const { token, isLoggedIn } = useAppSelector((state) => state.auth);
@@ -22,6 +25,19 @@ const Navbar = (props: Props) => {
   const handleLogut = () => {
     if (token !== null) dispatch(postLogout(token));
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+    dispatch(
+      getUserInfo(isMounted, controller, axiosprivate, location, navigate)
+    );
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   return (
     <FlexBetween mb="0.25rem" p="0.5rem 0rem" color={palette.grey[300]}>

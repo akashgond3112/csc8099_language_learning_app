@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.language.learning.dto.UserTestDto;
+import com.language.learning.dto.UserTestItemDto;
 import com.language.learning.entity.User;
 import com.language.learning.entity.UserTest;
 import com.language.learning.entity.UserTestItem;
-import com.language.learning.entity.UserTestItemRepository;
 import com.language.learning.enums.Status;
 import com.language.learning.exception.UserTestException;
+import com.language.learning.repository.UserTestItemRepository;
 import com.language.learning.repository.UserTestRepository;
 import com.language.learning.responses.userTest.UserTestItemResponse;
 import com.language.learning.responses.userTest.UserTestResponse;
@@ -22,8 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.language.learning.utilities.Utilities.getJsonObject;
 
 /**
  * @author agond
@@ -72,7 +71,7 @@ public class UserTestServiceImplement implements UserTestService {
         userTest.setTotalPoints((long) totalPoints.get());
         userTest.setGainedPoints(0L);
         try {
-            if (userItems.size() > 0) {
+            if (!userItems.isEmpty()) {
 
                 userTest.setTotalQuestions((long) userItems.size());
             } else {
@@ -95,6 +94,9 @@ public class UserTestServiceImplement implements UserTestService {
             userTestItem.setUserTest(userTest);
             userTestItem.setStatus(Status.START);
             userTestItem.setTotalPoints((long) item.getInt("total_points"));
+            userTestItem.setBloomsLevel(item.getString("blooms_level"));
+            userTestItem.setDifficultyLevel(item.getString("difficulty_level"));
+            userTestItem.setType(item.getString("type"));
             userTestItem.setGainedPoints(0L);
             userTestItem.setAnswer(null);
             userTestItem.setUserTestItemId(item.getString("_id"));
@@ -171,22 +173,77 @@ public class UserTestServiceImplement implements UserTestService {
 
         /*Create an empty List of UserTestResponse, Loop through each userTests and generate the response*/
         List<UserTestResponse> userTestResponses = new ArrayList<>();
-        if (userTests.size() > 0)
+        if (!userTests.isEmpty())
             userTests.forEach(userTest -> userTestResponses.add(generateUserTestResponse(userTest)));
         return userTestResponses;
     }
+
+    /**
+     * @param user
+     * @param userTestId
+     * @param userTestItemDto
+     * @return
+     */
+    @Override
+    public UserTestResponse evaluateTestItem(User user, Long userTestId, UserTestItemDto userTestItemDto) {
+
+        UserTestItem userTestItem = userTestItemRepository.findByUserTestItemIdAndUserTestIdAndUser(userTestItemDto.getUserTestItemId(), userTestId, user);
+
+        if (userTestItem == null)
+            throw new UserTestException("Cannot find the user item for the provided parameters;");
+        if (userTestItemDto.getIsCorrect()) {
+            userTestItem.setGainedPoints(userTestItemDto.getGainedPoints());
+            userTestItem.setIsCorrect(true);
+        } else {
+            userTestItem.setGainedPoints(0L);
+            userTestItem.setIsCorrect(false);
+        }
+        userTestItem.setStatus(Status.COMPLETED);
+
+        if(userTestItemDto.getAnswer() !=null) userTestItem.setAnswer(userTestItemDto.getAnswer());
+        userTestItemRepository.save(userTestItem);
+
+        long previouslyTotalGainedPoints = userTestItem.getUserTest().getGainedPoints();
+        long previouslyQuestionAttempted = userTestItem.getUserTest().getQuestionAttempted();
+        userTestItem.getUserTest().setGainedPoints(previouslyTotalGainedPoints + userTestItem.getGainedPoints());
+        userTestItem.getUserTest().setQuestionAttempted(previouslyQuestionAttempted + 1);
+
+
+        /*Check if user has attempted all the item by checking the status as completed if the queries return null it means
+         * all the item is completed , hence test is also completed*/
+
+        boolean isAllItemAttempted = userTestItemRepository.findAllByUserTestIdAndUserAndStatus(userTestId, user, Status.START).isEmpty();
+
+        if (isAllItemAttempted) {
+            // Complete the test as well
+            userTestItem.getUserTest().setStatus(Status.COMPLETED);
+        }
+
+        userTestRepository.save(userTestItem.getUserTest());
+
+        return generateUserTestResponse(userTestItem.getUserTest(), userTestItem);
+    }
+
 
     private UserTestResponse generateUserTestResponse(UserTest userTest, UserTestItem userTestItem) {
 
         UserTestItemResponse userTestItemResponses = UserTestItemResponse.builder()
                 .userId(userTest.getUser().getId())
                 .testId(userTest.getId())
+                .testItemId(userTestItem.getUserTestItemId())
                 .status(userTestItem.getStatus().getValue())
                 .content(userTestItem.getContent().toString())
                 .totalPoints(userTestItem.getTotalPoints())
                 .gainedPoints(userTestItem.getGainedPoints())
                 .answer(userTestItem.getAnswer())
+                .bloomsLevel(userTestItem.getBloomsLevel())
+                .difficultyLevel(userTestItem.getDifficultyLevel())
+                .type(userTestItem.getType())
                 .updated_at(userTestItem.getUpdated_at()).build();
+
+        if(userTestItem.getIsCorrect() !=null){
+            userTestItemResponses.setIsCorrect(userTestItem.getIsCorrect());
+        }
 
         return UserTestResponse.builder()
                 .userId(userTest.getUser().getId())

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 
@@ -22,10 +21,15 @@ public class UserTestItemResponse {
 
     private Long userId;
     private Long testId;
+    private String testItemId;
     private String status;
     private Long totalPoints;
     private Long gainedPoints;
     private String answer;
     private String content;
+    private String difficultyLevel;
+    private String bloomsLevel;
+    private String type;
+    private Boolean isCorrect;
     private LocalDateTime updated_at;
 }

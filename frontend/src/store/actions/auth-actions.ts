@@ -5,6 +5,8 @@ import setCookie from "../../utils/Utillities";
 import deleteCookie from "../../utils/Utillities";
 import { setFirstLanguage, setFirstLanguageImageUrl, setImageUrl, setSecondLanguage, setSecondLanguageImageUrl } from "../slice/nav-slice";
 import { setLocalStorageItems, clearLocalStorageItems } from "../../utils/Utillities"
+import { AxiosInstance } from "axios";
+import { NavigateFunction } from "react-router-dom";
 
 
 export const postRegister = (userRegister: object) => {
@@ -66,35 +68,48 @@ export const postLogIn = (userCredentials: object) => {
     }
 }
 
-export const getUserInfo = (token: string) => {
-    console.log("token : ", token);
+export const getUserInfo = (isMounted: boolean, controller: AbortController, axiosprivate: AxiosInstance, location: any, navigate: NavigateFunction) => {
 
     return async (dispatch: Dispatch) => {
-        try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
 
-            const url: string = `/api/v1/auth/userinfo`;
-            const data = await axios.get(url, config);
-            if (data.status === 200) {
-                if (data.data.nativeLanguage) dispatch(setFirstLanguage(data.data.nativeLanguage))
-                if (data.data.nativeLanguageImageUrl) dispatch(setFirstLanguageImageUrl(data.data.nativeLanguageImageUrl))
-                if (data.data.targetLanguage) dispatch(setSecondLanguage(data.data.targetLanguage))
-                if (data.data.targetLanguageImageUrl) dispatch(setSecondLanguageImageUrl(data.data.targetLanguageImageUrl))
-                if (data.data.imageUrl) dispatch(setImageUrl(data.data.imageUrl))
+        const getUserDetails = async () => {
+
+            try {
+
+                const response = await axiosprivate.get(`/api/v1/auth/userinfo`, {
+                    signal: controller.signal,
+                });
+
+                const result: any = response.data;
+
+                return result;
+
+            } catch (err) {
+                console.error("Something went wrong", err);
+                navigate("/", { state: { from: location }, replace: true });
+                throw err; // Propagate the error to the calling function
+            }
+        };
+
+        try {
+            const data = isMounted && await getUserDetails();
+            
+            if (isMounted) {
+
+                if (data.nativeLanguage) dispatch(setFirstLanguage(data.nativeLanguage))
+                if (data.nativeLanguageImageUrl) dispatch(setFirstLanguageImageUrl(data.nativeLanguageImageUrl))
+                if (data.targetLanguage) dispatch(setSecondLanguage(data.targetLanguage))
+                if (data.targetLanguageImageUrl) dispatch(setSecondLanguageImageUrl(data.targetLanguageImageUrl))
+                if (data.imageUrl) dispatch(setImageUrl(data.imageUrl))
 
 
                 /* Set local storage */
                 /* Set the value in local storage as well*/
-                setLocalStorageItems(undefined, undefined, undefined, data.data.userId, data.data.email);
-            } else {
-                throw new Error(data.data);
+                setLocalStorageItems(undefined, undefined, undefined, data.userId, data.email);
             }
-        } catch (error) {
-            return error;
+        } catch (err) {
+            console.log(err);
+
         }
     }
 
@@ -161,5 +176,3 @@ export const postLogout = (token: string) => {
     }
 
 };
-
-

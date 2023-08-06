@@ -1,8 +1,9 @@
-import { Box, Button, List, Typography, useTheme } from "@mui/material";
+import { Box, CircularProgress, List, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { UserTestDetail } from "../../state/types";
+import CustomButton from "../../component/CustomButton";
 
 export default function StartQuiz() {
   const { palette } = useTheme();
@@ -86,7 +87,19 @@ export default function StartQuiz() {
         </Box>
         {userTest && (
           <Box>
-            <Button onClick={() => handleOnclick()}>{userTest.status}</Button>
+            <CustomButton
+              onClick={handleOnclick}
+              text={userTest.status === "inProgress" ? "Resume" : "Start"}
+            />
+          </Box>
+        )}
+        {!userTest && (
+          <Box>
+            <CircularProgress
+              size={"2rem"}
+              sx={{ color: palette.secondary[500] }}
+            />
+            <Typography variant="h4">Loading</Typography>
           </Box>
         )}
       </Box>

@@ -1,34 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { UserTestDetail } from "../../state/types";
 
 const questionSlice = createSlice({
   name: "questions",
   initialState: {
-    queue: [],
-    answers: [],
-    trace: 0,
+    userTest: undefined as UserTestDetail | undefined,
+    isLoading: true,
+    err : undefined as Error | undefined
   },
   reducers: {
     startExamAction(state, action) {
-      return {
-        ...state,
-        queue: action.payload,
-      };
+      state.userTest = action.payload
+
     },
-    moveNextQuestion(state) {
-      return {
-        ...state,
-        trace: state.trace + 1,
-      };
+    moveNextPreviousQuestion(state, action) {
+      state.userTest = action.payload
     },
-    movePreviousQuestion(state) {
-      return {
-        ...state,
-        trace: state.trace + -1,
-      };
+    evaluate(state, action) {
+      state.userTest =action.payload
     },
+    setIsLoading(state, action) {
+      state.isLoading = action.payload
+    },
+    setError(state, action) {
+      state.err =action.payload
+    }
   },
 });
 
-export const { startExamAction, moveNextQuestion, movePreviousQuestion } =
+export const { startExamAction, moveNextPreviousQuestion, evaluate, setIsLoading, setError } =
   questionSlice.actions;
 export default questionSlice;

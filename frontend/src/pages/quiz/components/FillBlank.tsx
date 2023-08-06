@@ -1,34 +1,54 @@
-import React, { useState } from "react";
-import {
-  TextField,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Button,
-  useTheme,
-  Box,
-  Typography,
-} from "@mui/material";
-import { QuestionsResponse } from "../../../state/types";
+import { useState } from "react";
+import { TextField, Box, Typography, Alert, AlertTitle } from "@mui/material";
+import { QuestionsResponse, UserTestItemResponses } from "../../../state/types";
+import CustomButton from "../../../component/CustomButton";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { useAppDispatch } from "../../../hooks/utils";
+import { evaluateQuestion } from "../../../store/actions/question-action";
 
 type Props = {
-  question: QuestionsResponse;
+  userTestItemResponses: UserTestItemResponses;
 };
 
-function Fib({ question }: Props) {
+function Fib({ userTestItemResponses }: Props) {
+  const question: QuestionsResponse = JSON.parse(userTestItemResponses.content);
+
+  const axiosprivate = useAxiosPrivate();
+  const dispatch = useAppDispatch();
+  const key = window.location.pathname.split("/")[2];
+
   const [answer, setAnswer] = useState<string>("");
-  const [isCorrect, setIsCorrect] = useState<boolean>();
-  const { palette } = useTheme();
+  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(
+    userTestItemResponses.status === `completed`
+  );
+  const [isCorrect, setIsCorrect] = useState(
+    userTestItemResponses?.isCorrect ?? false
+  );
 
   const handleSubmit = () => {
+    let isMounted = true;
+    const controller = new AbortController();
+
     console.log(answer);
+    setIsAnswerSubmitted(true);
     if (answer === question.options[0].content) {
       setIsCorrect(true);
     } else {
       setIsCorrect(false);
     }
+
+    dispatch(
+      evaluateQuestion(isMounted, controller, key, axiosprivate, {
+        userTestItemId: userTestItemResponses.testItemId,
+        gainedPoints: isCorrect ? userTestItemResponses.totalPoints : 0,
+        isCorrect,
+      })
+    );
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   };
 
   return (
@@ -41,7 +61,7 @@ function Fib({ question }: Props) {
       }}
     >
       <Box>
-        <Typography variant="h2">
+        <Typography variant="h2" color={"white"}>
           {question.question}
         </Typography>
       </Box>
@@ -70,16 +90,28 @@ function Fib({ question }: Props) {
           />
         )}
       </Box>
-      <Box>
-        <Button
-          sx={{ mt: 1, mr: 1 }}
-          variant="outlined"
-          color="primary"
-          onClick={handleSubmit}
-        >
-          Check Answer
-        </Button>
-      </Box>
+      {/* Evaluation */}
+      {isAnswerSubmitted && !isCorrect && (
+        <Alert severity="error">
+          <AlertTitle>InCorrect</AlertTitle>
+          Sorry, wrong answer!
+        </Alert>
+      )}
+      {isAnswerSubmitted && isCorrect && (
+        <Alert severity="success">
+          <AlertTitle>Correct</AlertTitle>
+          You got it!
+        </Alert>
+      )}
+      {!isAnswerSubmitted && (
+        <Box>
+          <CustomButton
+            text="Check Answer"
+            onClick={handleSubmit}
+            disabled={userTestItemResponses.status === `completed`}
+          />
+        </Box>
+      )}
     </Box>
   );
 }

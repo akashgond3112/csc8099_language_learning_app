@@ -1,5 +1,10 @@
 package com.language.learning.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -8,13 +13,17 @@ import javax.validation.constraints.NotEmpty;
  * @Date 17072023
  * Copyright (C) 2023 Newcastle University, UK
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserTestItemDto {
-    @NotEmpty(message = "userId should not be empty")
-    private Long userId;
-
-    @NotEmpty(message = "user test Id should not be empty")
-    private Long userTestId;
 
     @NotEmpty(message = "user test Item Id should not be empty")
-    private Long userTestItemId;
+    private String userTestItemId;
+    @NotEmpty(message = "user gained points should not be empty")
+    private Long gainedPoints;
+    @NotEmpty(message = "user isCorrect should not be empty")
+    private Boolean isCorrect;
+    private String answer;
 }
